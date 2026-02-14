@@ -1,6 +1,5 @@
 import { colors } from '@/constants/colors';
 import { spacing } from '@/constants/spacing';
-import { StatusBar } from 'expo-status-bar'; // CHANGE: Import from expo-status-bar
 import React from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -18,7 +17,6 @@ export const ScreenWrapper = ({
 }: Props) => {
   return (
     <SafeAreaView style={styles.safeArea} edges={edges}>
-      <StatusBar style="light" backgroundColor="white" translucent={false} />
       <View style={[styles.content, style]}>
         {children}
       </View>

@@ -2,7 +2,6 @@ import 'react-native-gesture-handler';
 import React from 'react';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
-import { Platform, StatusBar } from 'react-native';
 
 // Screens
 import { HomeScreen } from '@/features/home/HomeScreen';
@@ -25,7 +24,6 @@ const CustomTheme = {
   },
 };
 
-// Optimized transition config for Android
 const config = {
   animation: 'spring' as const,
   config: {
@@ -40,66 +38,53 @@ const config = {
 
 export function AppNavigator() {
   return (
-    <>
-      <StatusBar
-        barStyle="dark-content"
-        backgroundColor={colors.background}
-        translucent={false}
-      />
-      <NavigationContainer theme={CustomTheme}>
-        <Stack.Navigator
-          detachInactiveScreens={true}
-          screenOptions={{
-            headerStyle: {
-              backgroundColor: colors.background,
-              elevation: 0,
-              shadowOpacity: 0,
-              borderBottomWidth: 0,
-            },
-            headerTitleStyle: {
-              color: colors.text.primary,
-              fontWeight: '600',
-              fontSize: 17,
-            },
-            headerTintColor: colors.primary,
-            headerBackTitle: '',
-            headerLeftContainerStyle: {
-              paddingLeft: Platform.OS === 'android' ? 8 : 0,
-            },
-            cardStyle: {
-              backgroundColor: colors.background,
-            },
-            cardOverlayEnabled: false,
-            cardShadowEnabled: false,
-            cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
-            transitionSpec: {
-              open: config,
-              close: config,
-            },
-            gestureEnabled: true,
-            gestureDirection: 'horizontal',
-            gestureResponseDistance: 100,
-            gestureVelocityImpact: 0.3,
+    <NavigationContainer theme={CustomTheme}>
+      <Stack.Navigator
+        screenOptions={{
+          headerStyle: {
+            backgroundColor: colors.background,
+            elevation: 0,
+            shadowOpacity: 0,
+            borderBottomWidth: 0,
+          },
+          headerTitleStyle: {
+            color: colors.text.primary,
+            fontWeight: '600',
+            fontSize: 17,
+          },
+          headerTintColor: colors.primary,
+          headerBackTitle: '',
+          cardStyle: {
+            backgroundColor: colors.background,
+          },
+          cardOverlayEnabled: false,
+          cardShadowEnabled: false,
+          cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+          transitionSpec: {
+            open: config,
+            close: config,
+          },
+          gestureEnabled: true,
+          gestureDirection: 'horizontal',
+        }}
+      >
+        <Stack.Screen
+          name="Home"
+          component={HomeScreen}
+          options={{
+            headerShown: false,
           }}
-        >
-          <Stack.Screen
-            name="Home"
-            component={HomeScreen}
-            options={{
-              headerShown: false,
-            }}
-          />
+        />
 
-          <Stack.Screen
-            name="SessionList"
-            component={SessionListScreen}
-            options={{
-              headerShown: true,
-              title: 'All Sessions',
-            }}
-          />
-        </Stack.Navigator>
-      </NavigationContainer>
-    </>
+        <Stack.Screen
+          name="SessionList"
+          component={SessionListScreen}
+          options={{
+            headerShown: true,
+            title: 'All Sessions',
+          }}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
