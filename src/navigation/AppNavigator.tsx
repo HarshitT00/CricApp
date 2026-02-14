@@ -1,6 +1,4 @@
-import { AttendanceScreen } from '@/features/attendance/AttendanceScreen';
 import { HomeScreen } from '@/features/home/HomeScreen';
-import { PlayerDetailScreen } from '@/features/player_profile/PlayerDetailScreen';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
@@ -26,8 +24,6 @@ export function AppNavigator() {
         }}>
         
         <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="PlayerDetail" component={PlayerDetailScreen} />
-        <Stack.Screen name="Attendance" component={AttendanceScreen} /> 
         
       </Stack.Navigator>
     </NavigationContainer>

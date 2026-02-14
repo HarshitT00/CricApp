@@ -1,62 +1,123 @@
+import React from 'react';
+import { ScrollView, StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { ScreenWrapper } from '@/components/ScreenWrapper';
 import { colors } from '@/constants/colors';
 import { spacing } from '@/constants/spacing';
-import { PlayerListItem } from '@/features/home/PlayerListItem';
-import { Player } from '@/types/Player';
-import { useNavigation } from '@react-navigation/native';
-import React from 'react';
-import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { Session } from '@/types/Session';
+import { HomeHeader } from '@/features/home/components/HomeHeader';
+import { SessionCard } from '@/features/home/components/SessionCard';
+import { AttendanceButton } from '@/features/home/components/AttendanceButton';
+import { StatsGrid } from '@/features/home/components/StatsGrid';
+import { VerificationList } from '@/features/home/components/VerificationList';
 
-const PLAYERS: Player[] = [
-  { id: '1', name: 'Virat Kohli', country: 'India', role: 'Batsman', image: 'https://placehold.co/100', stats: { matches: 250, runs: 12000, wickets: 4 } },
-  { id: '2', name: 'Steve Smith', country: 'Australia', role: 'Batsman', image: 'https://placehold.co/100', stats: { matches: 140, runs: 8000, wickets: 17 } },
-  { id: '3', name: 'Jasprit Bumrah', country: 'India', role: 'Bowler', image: 'https://placehold.co/100', stats: { matches: 70, runs: 50, wickets: 150 } },
+const MOCK_SESSIONS: Session[] = [
+  {
+    id: '1',
+    title: 'U16 Nets Practice',
+    location: 'Pitch 3, North Wing',
+    time: '07:00 AM',
+    image: 'https://images.unsplash.com/photo-1531415074968-036ba1b575da?q=80&w=2067',
+    status: 'UPCOMING',
+  },
+  {
+    id: '2',
+    title: 'Fielding Drills',
+    location: 'Main Ground',
+    time: '09:30 AM',
+    image: 'https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?q=80&w=2067',
+    status: 'UPCOMING',
+  },
+  {
+    id: '3',
+    title: 'Batting Practice',
+    location: 'Pitch 1, South Wing',
+    time: '02:00 PM',
+    image: 'https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?q=80&w=2067',
+    status: 'UPCOMING',
+  }
 ];
 
 export function HomeScreen() {
-  const navigation = useNavigation<any>();
-
   return (
-    <ScreenWrapper> 
-      <FlatList
-        data={PLAYERS}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <PlayerListItem 
-            player={item} 
-            onPress={(p) => navigation.navigate('PlayerDetail', { player: p })} 
-          />
-        )}
-        ListHeaderComponent={
-          <View style={styles.header}>
-            <Text style={styles.title}>CricApp</Text>
-            <Text style={styles.subtitle}>Live Scores & Stats</Text>
-          </View>
-        }
-        contentContainerStyle={styles.listContent}
+    <ScreenWrapper>
+      <ScrollView 
+        contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
-      />
+      >
+        <HomeHeader />
+        
+        <SectionHeader title="Today's Sessions" badge={MOCK_SESSIONS.length} action="View All" />
+        
+        {/* Pass the data list here */}
+        <SessionCard sessions={MOCK_SESSIONS} />
+        
+        <View style={styles.spacer} />
+
+        <AttendanceButton onPress={() => console.log('Start Attendance')} />
+        
+        <StatsGrid />
+        
+        <SectionHeader title="Pending Verifications" badge={2} />
+        <VerificationList />
+        
+      </ScrollView>
     </ScreenWrapper>
   );
 }
 
+const SectionHeader = ({ title, action, badge }: any) => (
+  <View style={styles.sectionHeader}>
+    <View style={styles.titleRow}>
+      <Text style={styles.sectionTitle}>{title}</Text>
+      {badge && (
+        <View style={styles.badge}>
+          <Text style={styles.badgeText}>{badge}</Text>
+        </View>
+      )}
+    </View>
+    {action && (
+      <TouchableOpacity>
+        <Text style={styles.actionText}>{action}</Text>
+      </TouchableOpacity>
+    )}
+  </View>
+);
+
 const styles = StyleSheet.create({
-  listContent: {
-    paddingBottom: spacing.xl,
+  scrollContent: {
+    paddingBottom: spacing.xxl,
   },
-  header: { 
-    marginTop: spacing.s,
-    marginBottom: spacing.l, 
+  spacer: {
+    height: spacing.l,
   },
-  title: { 
-    fontSize: 32, 
-    fontWeight: '800', 
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: spacing.l,
+  },
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
     color: colors.text.primary,
-    letterSpacing: -0.5,
   },
-  subtitle: { 
-    fontSize: 16, 
-    color: colors.text.secondary,
-    marginTop: spacing.xs,
+  badge: {
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 10,
+  },
+  badgeText: {
+    color: colors.text.primary,
+    fontSize: 12,
+  },
+  actionText: {
+    color: colors.primary,
+    fontWeight: '600',
   },
 });
