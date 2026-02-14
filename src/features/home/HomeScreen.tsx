@@ -9,6 +9,11 @@ import { SessionCard } from '@/features/home/components/SessionCard';
 import { AttendanceButton } from '@/features/home/components/AttendanceButton';
 import { StatsGrid } from '@/features/home/components/StatsGrid';
 import { VerificationList } from '@/features/home/components/VerificationList';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useNavigation } from '@react-navigation/native';
+import { RootStackParamList } from '@/navigation/types';
+
+type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 const MOCK_SESSIONS: Session[] = [
   {
@@ -38,6 +43,10 @@ const MOCK_SESSIONS: Session[] = [
 ];
 
 export function HomeScreen() {
+  const navigation = useNavigation<NavigationProp>();
+  const handleViewAll = () => {
+    navigation.navigate('SessionList');
+  };
   return (
     <ScreenWrapper>
       <ScrollView 
@@ -46,9 +55,11 @@ export function HomeScreen() {
       >
         <HomeHeader />
         
-        <SectionHeader title="Today's Sessions" badge={MOCK_SESSIONS.length} action="View All" />
-        
-        {/* Pass the data list here */}
+        <SectionHeader 
+          title="Today's Sessions" 
+          action="View All" 
+          onPress={handleViewAll} 
+        />
         <SessionCard sessions={MOCK_SESSIONS} />
         
         <View style={styles.spacer} />
@@ -65,7 +76,7 @@ export function HomeScreen() {
   );
 }
 
-const SectionHeader = ({ title, action, badge }: any) => (
+const SectionHeader = ({ title, action, badge, onPress }: any) => (
   <View style={styles.sectionHeader}>
     <View style={styles.titleRow}>
       <Text style={styles.sectionTitle}>{title}</Text>
@@ -76,7 +87,7 @@ const SectionHeader = ({ title, action, badge }: any) => (
       )}
     </View>
     {action && (
-      <TouchableOpacity>
+      <TouchableOpacity onPress={onPress}>
         <Text style={styles.actionText}>{action}</Text>
       </TouchableOpacity>
     )}
