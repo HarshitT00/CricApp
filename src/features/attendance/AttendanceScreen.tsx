@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert, Image } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { Ionicons } from '@expo/vector-icons';
-import { ScreenWrapper } from '@/components/common/ScreenWrapper';
-import { CameraFrame } from '@/components/common/CameraFrame';
+import { ScreenWrapper } from '@/components/ScreenWrapper';
+import { CameraFrame } from '@/components/CameraFrame';
 import { colors } from '@/constants/colors';
 import { spacing } from '@/constants/spacing';
+import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
+import React, { useState } from 'react';
+import { Alert, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export function AttendanceScreen() {
   const navigation = useNavigation();

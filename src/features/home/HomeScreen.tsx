@@ -1,11 +1,11 @@
-import React from 'react';
-import { View, Text, FlatList, StyleSheet } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { ScreenWrapper } from '@/components/common/ScreenWrapper';
-import { PlayerListItem } from '@/components/player/PlayerListItem';
-import { Player } from '@/types/Player';
+import { ScreenWrapper } from '@/components/ScreenWrapper';
 import { colors } from '@/constants/colors';
 import { spacing } from '@/constants/spacing';
+import { PlayerListItem } from '@/features/home/PlayerListItem';
+import { Player } from '@/types/Player';
+import { useNavigation } from '@react-navigation/native';
+import React from 'react';
+import { FlatList, StyleSheet, Text, View } from 'react-native';
 
 const PLAYERS: Player[] = [
   { id: '1', name: 'Virat Kohli', country: 'India', role: 'Batsman', image: 'https://placehold.co/100', stats: { matches: 250, runs: 12000, wickets: 4 } },

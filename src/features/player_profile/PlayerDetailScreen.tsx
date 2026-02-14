@@ -1,11 +1,11 @@
-import React from 'react';
-import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
-import { Ionicons } from '@expo/vector-icons';
-import { ScreenWrapper } from '@/components/common/ScreenWrapper';
-import { Player } from '@/types/Player';
+import { ScreenWrapper } from '@/components/ScreenWrapper';
 import { colors } from '@/constants/colors';
 import { spacing } from '@/constants/spacing';
+import { Player } from '@/types/Player';
+import { Ionicons } from '@expo/vector-icons';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import React from 'react';
+import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export function PlayerDetailScreen() {
   const navigation = useNavigation<any>();
@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: spacing.l,
     borderRadius: spacing.borderRadius,
-    marginBottom: spacing.xxl, // Pushes the avatar down
+    marginBottom: spacing.xxl,
     shadowColor: colors.primary,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,

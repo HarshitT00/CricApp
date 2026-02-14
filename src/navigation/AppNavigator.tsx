@@ -1,9 +1,9 @@
-import React from 'react';
+import { AttendanceScreen } from '@/features/attendance/AttendanceScreen';
+import { HomeScreen } from '@/features/home/HomeScreen';
+import { PlayerDetailScreen } from '@/features/player_profile/PlayerDetailScreen';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { HomeScreen } from '@/feature/home/HomeScreen';
-import { PlayerDetailScreen } from '@/feature/player_profile/PlayerDetailScreen';
-import { AttendanceScreen } from '@/feature/attendance/AttendanceScreen';
+import React from 'react';
 
 import { Player } from '@/types/Player';
 

@@ -1,12 +1,12 @@
 export const colors = {
-  primary: '#007AFF',
-  background: '#FFFFFF',
-  surface: '#F8F9FA', // Slightly grey for cards/stats
+  primary: '#FFFFFF',
+  background: '#033f06',
+  surface: '#FFFFFF',
   text: {
     primary: '#1A1A1A',
     secondary: '#666666',
     light: '#FFFFFF',
   },
   border: '#E0E0E0',
-  icon: '#333333',
+  icon: '#FFFFFF',
 };
