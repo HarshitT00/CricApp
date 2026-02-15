@@ -1,76 +1,57 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, FlatList, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, DimensionValue } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors } from '@/constants/colors';
 import { spacing } from '@/constants/spacing';
 import { Session } from '@/types/Session';
 
-interface SessionListProps {
-  sessions: Session[];
+interface SessionCardProps {
+  session: Session;
+  onPress?: () => void;
+  width?: DimensionValue;
+  height?: DimensionValue;
 }
 
-const { width } = Dimensions.get('window');
-const CARD_WIDTH = width * 0.85; 
-const SPACING_GAP = spacing.m;
-
-export const SessionCard = ({ sessions }: SessionListProps) => {
-  
-  const renderItem = ({ item }: { item: Session }) => (
-    <View style={styles.cardContainer}>
+export const SessionCard = ({ session, onPress, width, height = 180 }: SessionCardProps) => {
+  return (
+    <TouchableOpacity 
+      activeOpacity={0.9} 
+      onPress={onPress}
+      // Apply the height prop here
+      style={[styles.cardContainer, { width: width || '100%', height }]} 
+    >
       <Image 
-        source={{ uri: item.image }} 
+        source={{ uri: session.image }} 
         style={styles.image}
+        resizeMode="cover"
       />
       <View style={styles.overlay} />
+      
       <View style={styles.content}>
-        <View style={styles.badge}>
-          <Text style={styles.badgeText}>{item.status}</Text>
+        <View style={[styles.badge, session.status === 'LIVE' && styles.liveBadge]}>
+          <Text style={styles.badgeText}>
+            {session.status === 'LIVE' ? '● LIVE' : session.status}
+          </Text>
         </View>
 
         <View style={styles.footer}>
-          <View>
-            <Text style={styles.title}>{item.title}</Text>
+          <View style={styles.infoContainer}>
+            <Text style={styles.title} numberOfLines={1}>{session.title}</Text>
             <View style={styles.row}>
               <Ionicons name="location-sharp" size={14} color={colors.text.secondary} />
-              <Text style={styles.location}>{item.location}</Text>
+              <Text style={styles.location} numberOfLines={1}>{session.location}</Text>
             </View>
           </View>
-          <Text style={styles.time}>{item.time}</Text>
+          <Text style={styles.time}>{session.time}</Text>
         </View>
       </View>
-    </View>
-  );
-
-  return (
-    <View>
-      <FlatList
-        data={sessions}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        style={styles.flatList} 
-        contentContainerStyle={styles.listContent}
-        snapToInterval={CARD_WIDTH + SPACING_GAP} 
-        decelerationRate="fast"
-        ItemSeparatorComponent={() => <View style={{ width: SPACING_GAP }} />}
-      />
-    </View>
+    </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
-  flatList: {
-    marginHorizontal: -spacing.screenPadding, 
-    flexGrow: 0,
-  },
-  listContent: {
-    paddingHorizontal: spacing.screenPadding,
-    paddingBottom: spacing.s,
-  },
   cardContainer: {
-    width: CARD_WIDTH,
-    height: 180,
+    // Height is now handled via style prop in component
     borderRadius: spacing.borderRadius,
     overflow: 'hidden',
     backgroundColor: colors.surface,
@@ -98,6 +79,9 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     borderRadius: 20,
   },
+  liveBadge: {
+    backgroundColor: '#FF3B30',
+  },
   badgeText: {
     color: '#000',
     fontWeight: 'bold',
@@ -107,6 +91,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-end',
+  },
+  infoContainer: {
+    flex: 1,
+    marginRight: spacing.m,
   },
   title: {
     color: colors.text.primary,

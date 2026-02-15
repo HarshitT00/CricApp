@@ -1,11 +1,10 @@
 import React from 'react';
 import { View, FlatList, StyleSheet } from 'react-native';
 import { ScreenWrapper } from '@/components/ScreenWrapper';
-import { SessionCard } from '@/features/home/components/SessionCard'; 
+import { SessionCard } from '@/components/SessionCard';
 import { spacing } from '@/constants/spacing';
 import { Session } from '@/types/Session';
 
-// Mock Data for the list
 const ALL_SESSIONS: Session[] = [
   {
     id: '1', 
@@ -40,10 +39,12 @@ export const SessionListScreen = () => {
         data={ALL_SESSIONS}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.listContent}
+        ItemSeparatorComponent={() => <View style={{ height: spacing.m }} />}
         renderItem={({ item }) => (
-          <View style={styles.itemContainer}>
-            <SessionCard sessions={[item]} />
-          </View>
+          <SessionCard 
+            session={item} 
+            height={150} // Reduced length (from default 180)
+          />
         )}
       />
     </ScreenWrapper>
@@ -52,10 +53,8 @@ export const SessionListScreen = () => {
 
 const styles = StyleSheet.create({
   listContent: {
-    paddingVertical: spacing.l,
-    gap: spacing.m,
+    paddingHorizontal: spacing.s,
+    paddingTop: spacing.m,
+    paddingBottom: 100,
   },
-  itemContainer: {
-    marginBottom: spacing.m,
-  }
 });
