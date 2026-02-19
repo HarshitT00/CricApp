@@ -1,60 +1,107 @@
-import React from 'react';
-import { View, FlatList, StyleSheet } from 'react-native';
+import React, { useState, useMemo, useLayoutEffect } from 'react';
+import { View, FlatList, StyleSheet, Text } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { ScreenWrapper } from '@/components/ScreenWrapper';
 import { SessionCard } from '@/components/SessionCard';
 import { spacing } from '@/constants/spacing';
+import { colors } from '@/constants/colors';
 import { Session } from '@/types/Session';
 
+// Modular Components
+import { SessionHeader } from './components/SessionHeader';
+import { SessionTabs, SessionTabOption } from './components/SessionTabs';
+import { CreateSessionFab } from './components/CreateSessionFab';
+
+// Mock Data
 const ALL_SESSIONS: Session[] = [
   {
-    id: '1', 
-    title: 'U16 Nets Practice', 
-    location: 'Pitch 3, North Wing', 
-    time: '07:00 AM', 
-    image: 'https://images.unsplash.com/photo-1531415074968-036ba1b575da?q=80&w=2067', 
-    status: 'UPCOMING' 
+    id: '1', title: 'U16 Match Day', location: 'Main Stadium', time: 'NOW', 
+    image: 'https://images.unsplash.com/photo-1531415074968-036ba1b575da?q=80&w=2067', status: 'LIVE' 
   },
   {
-    id: '2', 
-    title: 'Fielding Drills', 
-    location: 'Main Ground', 
-    time: '09:30 AM', 
-    image: 'https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?q=80&w=2067', 
-    status: 'UPCOMING' 
+    id: '2', title: 'Batting Drills', location: 'Nets Area 2', time: '10:00 AM', 
+    image: 'https://images.unsplash.com/photo-1624526267942-ab0ff8a3e972?q=80&w=2067', status: 'UPCOMING' 
   },
   {
-    id: '3', 
-    title: 'Match Simulation', 
-    location: 'Pitch 1', 
-    time: '02:00 PM', 
-    image: 'https://images.unsplash.com/photo-1624526267942-ab0ff8a3e972?q=80&w=2067', 
-    status: 'UPCOMING' 
+    id: '3', title: 'Fitness Test', location: 'Gym', time: 'Yesterday', 
+    image: 'https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?q=80&w=2067', status: 'COMPLETED' 
+  },
+  {
+    id: '4', title: 'Strategy Meeting', location: 'Conf Room', time: 'Last Week', 
+    image: 'https://images.unsplash.com/photo-1531415074968-036ba1b575da?q=80&w=2067', status: 'COMPLETED' 
   },
 ];
 
 export const SessionListScreen = () => {
+  const navigation = useNavigation();
+  const [activeTab, setActiveTab] = useState<SessionTabOption>('Active');
+
+  // Hide the default navigation header
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerShown: false, 
+    });
+  }, [navigation]);
+
+  const filteredSessions = useMemo(() => {
+    if (activeTab === 'Active') {
+      return ALL_SESSIONS.filter(s => s.status === 'LIVE' || s.status === 'UPCOMING')
+        .sort((a, b) => (a.status === 'LIVE' ? -1 : 1));
+    } else {
+      return ALL_SESSIONS.filter(s => s.status === 'COMPLETED');
+    }
+  }, [activeTab]);
+
+  const handleCreateSession = () => {
+    console.log('Navigate to Create Session');
+  };
+
   return (
-    <ScreenWrapper>
-      <FlatList
-        data={ALL_SESSIONS}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.listContent}
-        ItemSeparatorComponent={() => <View style={{ height: spacing.m }} />}
-        renderItem={({ item }) => (
-          <SessionCard 
-            session={item} 
-            height={150} // Reduced length (from default 180)
-          />
-        )}
-      />
+    // CHANGED: Remove default padding so we can control width manually
+    <ScreenWrapper style={{ paddingHorizontal: 0 }}>
+      <View style={styles.container}>
+        <SessionHeader />
+        
+        <SessionTabs 
+          activeTab={activeTab} 
+          onTabChange={setActiveTab} 
+        />
+
+        <FlatList
+          data={filteredSessions}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={styles.listContent}
+          ItemSeparatorComponent={() => <View style={{ height: spacing.m }} />}
+          renderItem={({ item }) => (
+            <SessionCard 
+              session={item} 
+              height={150} 
+            />
+          )}
+          ListEmptyComponent={
+            <Text style={styles.emptyText}>No {activeTab.toLowerCase()} sessions found.</Text>
+          }
+        />
+
+        <CreateSessionFab onPress={handleCreateSession} />
+      </View>
     </ScreenWrapper>
   );
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
   listContent: {
-    paddingHorizontal: spacing.s,
-    paddingTop: spacing.m,
-    paddingBottom: 100,
+    // Matches the tabs margin (spacing.xs = 4px)
+    paddingHorizontal: spacing.xs, 
+    paddingBottom: 100, // Space for FAB
+  },
+  emptyText: {
+    color: colors.text.secondary,
+    textAlign: 'center',
+    marginTop: 40,
+    fontSize: 16,
   },
 });
