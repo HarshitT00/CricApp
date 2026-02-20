@@ -1,54 +1,83 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
-import { FormInput } from '@/components/FormInput';
 import { colors } from '@/constants/colors';
+import { spacing } from '@/constants/spacing';
+import { CreateSessionDetailsSection } from './CreateSessionDetailsSection';
+import { CreateSessionScheduleSection } from './CreateSessionScheduleSection';
 
 interface CreateSessionFormProps {
-  onSubmit: (sessionData: { title: string; location: string; date: string; overs: string }) => void;
+  onSubmit: (sessionData: any) => void;
 }
 
 export const CreateSessionForm: React.FC<CreateSessionFormProps> = ({ onSubmit }) => {
-  const [title, setTitle] = useState('');
-  const [location, setLocation] = useState('');
+  // Session Details State
+  const [name, setName] = useState('');
+  const [facility, setFacility] = useState('');
+
+  // Schedule State
+  const [isRepeating, setIsRepeating] = useState(false);
   const [date, setDate] = useState('');
-  const [overs, setOvers] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [startTime, setStartTime] = useState('');
+  const [endTime, setEndTime] = useState('');
+  const [selectedDays, setSelectedDays] = useState<string[]>([]);
+
+  // Handlers
+  const handleToggleDay = (day: string) => {
+    setSelectedDays(prev => 
+      prev.includes(day) 
+        ? prev.filter(d => d !== day) 
+        : [...prev, day]
+    );
+  };
 
   const handleSubmit = () => {
-    if (!title) return; 
-    
-    onSubmit({ title, location, date, overs });
+    onSubmit({
+      name,
+      facility,
+      schedule: {
+        isRepeating,
+        date: isRepeating ? null : date,
+        startDate: isRepeating ? startDate : null,
+        endDate: isRepeating ? endDate : null,
+        startTime,
+        endTime,
+        selectedDays: isRepeating ? selectedDays : [],
+      }
+    });
   };
 
   return (
     <View style={styles.container}>
-      <FormInput 
-        label="Session Name" 
-        placeholder="e.g., Weekend Practice" 
-        value={title}
-        onChangeText={setTitle}
+      
+      {/* 1. Session Details */}
+      <CreateSessionDetailsSection
+        name={name}
+        onChangeName={setName}
+        facility={facility}
+        onChangeFacility={setFacility}
+      />
+
+      {/* 2. Schedule */}
+      <CreateSessionScheduleSection
+        isRepeating={isRepeating}
+        onToggleRepeat={setIsRepeating}
+        date={date}
+        startDate={startDate}
+        endDate={endDate}
+        startTime={startTime}
+        endTime={endTime}
+        selectedDays={selectedDays}
+        onToggleDay={handleToggleDay}
+        onPressDate={() => console.log('Open Date Picker')}
+        onPressStartDate={() => console.log('Open Start Date Picker')}
+        onPressEndDate={() => console.log('Open End Date Picker')}
+        onPressStartTime={() => console.log('Open Start Time Picker')}
+        onPressEndTime={() => console.log('Open End Time Picker')}
       />
       
-      <FormInput 
-        label="Location / Ground" 
-        placeholder="e.g., Central Park Ground" 
-        value={location}
-        onChangeText={setLocation}
-      />
-
-      <FormInput 
-        label="Date & Time" 
-        placeholder="e.g., 24 Feb, 10:00 AM" 
-        value={date}
-        onChangeText={setDate}
-      />
-
-      <FormInput 
-        label="Total Overs" 
-        placeholder="e.g., 20" 
-        keyboardType="numeric"
-        value={overs}
-        onChangeText={setOvers}
-      />
+      {/* TODO: Add TraineesSection here later */}
 
       <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
         <Text style={styles.submitButtonText}>Create Session</Text>
@@ -59,17 +88,18 @@ export const CreateSessionForm: React.FC<CreateSessionFormProps> = ({ onSubmit }
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 16,
+    paddingTop: spacing.m,
+    paddingBottom: spacing.xxl,
   },
   submitButton: {
     backgroundColor: colors.primary,
     padding: 16,
-    borderRadius: 8,
+    borderRadius: spacing.borderRadius,
     alignItems: 'center',
-    marginTop: 24,
+    marginTop: spacing.xl,
   },
   submitButtonText: {
-    color: 'black',
+    color: colors.background,
     fontSize: 16,
     fontWeight: 'bold',
   },
