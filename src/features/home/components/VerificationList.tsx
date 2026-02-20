@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   status: {
-    color: colors.text.accent, // Using accent teal/green
+    color: colors.text.accent,
     fontSize: 12,
   },
   time: {

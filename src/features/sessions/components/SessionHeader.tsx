@@ -10,7 +10,6 @@ export const SessionHeader = () => {
 
   return (
     <View style={styles.container}>
-      {/* Back Button (Absolute Positioned) */}
       <TouchableOpacity 
         onPress={() => navigation.goBack()} 
         style={styles.backButton}
@@ -18,8 +17,6 @@ export const SessionHeader = () => {
       >
         <Ionicons name="arrow-back" size={24} color={colors.text.primary} />
       </TouchableOpacity>
-
-      {/* Title (Centered) */}
       <View style={styles.titleContainer}>
         <Text style={styles.title}>All Sessions</Text>
       </View>
@@ -32,15 +29,15 @@ const styles = StyleSheet.create({
     height: 44,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center', // Centers the title container
+    justifyContent: 'center',
     marginTop: spacing.s,
     marginBottom: spacing.m,
-    position: 'relative', // Context for absolute positioning
+    position: 'relative',
     paddingHorizontal: spacing.screenPadding,
   },
   backButton: {
     position: 'absolute',
-    left: spacing.screenPadding, // Pins button to the left safe zone
+    left: spacing.screenPadding,
     zIndex: 10,
     padding: 4,
   },
@@ -50,7 +47,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   title: {
-    fontSize: 24, // Slightly reduced to fit better with back arrow
+    fontSize: 24,
     fontWeight: 'bold',
     color: colors.text.primary,
     textAlign: 'center',

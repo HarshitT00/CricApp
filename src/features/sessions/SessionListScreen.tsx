@@ -6,13 +6,10 @@ import { SessionCard } from '@/components/SessionCard';
 import { spacing } from '@/constants/spacing';
 import { colors } from '@/constants/colors';
 import { Session } from '@/types/Session';
-
-// Modular Components
 import { SessionHeader } from './components/SessionHeader';
 import { SessionTabs, SessionTabOption } from './components/SessionTabs';
 import { CreateSessionFab } from './components/CreateSessionFab';
 
-// Mock Data
 const ALL_SESSIONS: Session[] = [
   {
     id: '1', title: 'U16 Match Day', location: 'Main Stadium', time: 'NOW', 
@@ -35,8 +32,6 @@ const ALL_SESSIONS: Session[] = [
 export const SessionListScreen = () => {
   const navigation = useNavigation();
   const [activeTab, setActiveTab] = useState<SessionTabOption>('Active');
-
-  // Hide the default navigation header
   useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: false, 
@@ -57,8 +52,7 @@ export const SessionListScreen = () => {
   };
 
   return (
-    // CHANGED: Remove default padding so we can control width manually
-    <ScreenWrapper style={{ paddingHorizontal: 0 }}>
+    <ScreenWrapper>
       <View style={styles.container}>
         <SessionHeader />
         
@@ -94,9 +88,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   listContent: {
-    // Matches the tabs margin (spacing.xs = 4px)
     paddingHorizontal: spacing.xs, 
-    paddingBottom: 100, // Space for FAB
+    paddingBottom: 100,
   },
   emptyText: {
     color: colors.text.secondary,

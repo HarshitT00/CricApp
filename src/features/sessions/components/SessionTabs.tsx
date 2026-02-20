@@ -38,7 +38,6 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     backgroundColor: colors.surface,
-    // CHANGED: Use spacing.xs (4px) instead of screenPadding (20px) to make tabs wider
     marginHorizontal: spacing.xs, 
     borderRadius: 12,
     padding: 4,

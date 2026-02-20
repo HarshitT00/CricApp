@@ -1,13 +1,9 @@
 import 'react-native-gesture-handler';
 import React from 'react';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
-import { createStackNavigator, CardStyleInterpolators, StackNavigationOptions } from '@react-navigation/stack';
-
-// Screens
+import { createStackNavigator, CardStyleInterpolators} from '@react-navigation/stack';
 import { HomeScreen } from '@/features/home/HomeScreen';
 import { SessionListScreen } from '@/features/sessions/SessionListScreen';
-
-// Constants & Types
 import { colors } from '@/constants/colors';
 import { RootStackParamList } from '@/navigation/types';
 
@@ -26,7 +22,6 @@ const CustomTheme = {
   },
 };
 
-// Custom Animation Config
 const transitionConfig = {
   animation: 'spring' as const,
   config: {
@@ -62,7 +57,6 @@ export function AppNavigator() {
           },
           cardOverlayEnabled: false,
           cardShadowEnabled: false,
-          // Defines the standard iOS-style slide from right
           cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
           transitionSpec: {
             open: transitionConfig,
@@ -84,7 +78,6 @@ export function AppNavigator() {
           name="SessionList"
           component={SessionListScreen}
           options={{
-            // HIDDEN: We use our custom <SessionHeader /> component inside the screen
             headerShown: false, 
             title: 'All Sessions',
           }}
