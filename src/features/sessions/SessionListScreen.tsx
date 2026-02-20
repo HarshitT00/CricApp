@@ -6,9 +6,11 @@ import { SessionCard } from '@/components/SessionCard';
 import { spacing } from '@/constants/spacing';
 import { colors } from '@/constants/colors';
 import { Session } from '@/types/Session';
-import { SessionHeader } from './components/SessionHeader';
 import { SessionTabs, SessionTabOption } from './components/SessionTabs';
 import { CreateSessionFab } from './components/CreateSessionFab';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '@/navigation/types';
+import { ScreenHeader } from '@/components/ScreenHeader';
 
 const ALL_SESSIONS: Session[] = [
   {
@@ -30,7 +32,7 @@ const ALL_SESSIONS: Session[] = [
 ];
 
 export const SessionListScreen = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [activeTab, setActiveTab] = useState<SessionTabOption>('Active');
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -48,13 +50,17 @@ export const SessionListScreen = () => {
   }, [activeTab]);
 
   const handleCreateSession = () => {
-    console.log('Navigate to Create Session');
+    navigation.navigate('CreateSession');
   };
 
   return (
     <ScreenWrapper>
       <View style={styles.container}>
-        <SessionHeader />
+        <ScreenHeader 
+          title="All Sessions" 
+          leftIconName="arrow-back" 
+          onLeftPress={() => navigation.goBack()} 
+        />
         
         <SessionTabs 
           activeTab={activeTab} 

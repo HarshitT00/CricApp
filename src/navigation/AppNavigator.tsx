@@ -6,6 +6,7 @@ import { HomeScreen } from '@/features/home/HomeScreen';
 import { SessionListScreen } from '@/features/sessions/SessionListScreen';
 import { colors } from '@/constants/colors';
 import { RootStackParamList } from '@/navigation/types';
+import { CreateSessionScreen } from '@/features/sessions/CreateSession';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -80,6 +81,15 @@ export function AppNavigator() {
           options={{
             headerShown: false, 
             title: 'All Sessions',
+          }}
+        />
+
+        <Stack.Screen
+          name="CreateSession"
+          component={CreateSessionScreen}
+          options={{
+            headerShown: false, 
+            title: 'Create Sessions',
           }}
         />
       </Stack.Navigator>

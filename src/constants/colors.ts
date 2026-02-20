@@ -9,6 +9,7 @@ export const colors = {
     secondary: '#A0A0A0',
     accent: '#24FF78',
     light: '#FFFFFF',
+    muted: '#888',
   },
   
   status: {
