@@ -1,15 +1,24 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
 
 import { colors } from '@/constants/colors';
 import { spacing } from '@/constants/spacing';
 import { CreateSessionDetailsSection } from '@/features/sessions/components/CreateSessionDetailsSection';
 import { CreateSessionScheduleSection } from '@/features/sessions/components/CreateSessionScheduleSection';
-import { Batch, CreateSessionTraineesSection } from '@/features/sessions/components/CreateSessionsTraineesSection';
+import { CreateSessionTraineesSection } from '@/features/sessions/components/CreateSessionsTraineesSection';
+import { Batch } from '@/types/Batch';
 
 interface CreateSessionFormProps {
   onSubmit: (sessionData: any) => void;
 }
+
+const DUMMY_BATCHES: Batch[] = [
+  { id: '1', name: 'U-19 Pro Batting' },
+  { id: '2', name: 'U-19 Pro Bowling' },
+  { id: '3', name: 'Senior Men T20' },
+  { id: '4', name: 'Beginners Batch A' },
+  { id: '5', name: 'Weekend Warriors' },
+];
 
 export const CreateSessionForm: React.FC<CreateSessionFormProps> = ({ onSubmit }) => {
   // Session Details State
@@ -31,12 +40,23 @@ export const CreateSessionForm: React.FC<CreateSessionFormProps> = ({ onSubmit }
     { id: '1', name: 'U-19 Pro Batting'}, { id: '2', name: 'U-19 Pro Bowling' }, { id: '3', name: 'U-17 Bowling' }
   ]);
 
-  const handleRemoveBatch = (idToRemove: string) => {
-    setSelectedBatches(prev => prev.filter(batch => batch.id !== idToRemove));
+  const searchResults = useMemo(() => {
+    if (!searchQuery.trim()) return [];
+    
+    return DUMMY_BATCHES.filter(batch => 
+      batch.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
+      // Prevent showing batches that are already selected
+      !selectedBatches.find(selected => selected.id === batch.id)
+    );
+  }, [searchQuery, selectedBatches]);
+
+  const handleSelectSearchResult = (batch: Batch) => {
+    setSelectedBatches(prev => [...prev, batch]); // Add to chips
+    setSearchQuery(''); // Clear the search bar
   };
 
-  const handlePressSelectTrainees = () => {
-    console.log('Open trainee selection modal');
+  const handleRemoveBatch = (idToRemove: string) => {
+    setSelectedBatches(prev => prev.filter(batch => batch.id !== idToRemove));
   };
 
   // Handlers
@@ -94,6 +114,8 @@ export const CreateSessionForm: React.FC<CreateSessionFormProps> = ({ onSubmit }
         onChangeSearch={setSearchQuery}
         selectedBatches={selectedBatches}
         onRemoveBatch={handleRemoveBatch}
+        searchResults={searchResults}
+        onSelectSearchResult={handleSelectSearchResult}
       />
 
       <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>

@@ -1,19 +1,17 @@
 import React from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { View, Text, StyleSheet } from 'react-native';
 import { colors } from '@/constants/colors';
 import { spacing } from '@/constants/spacing';
-
-export interface Batch {
-  id: string;
-  name: string;
-}
+import { Chip } from '@/components/Chip';
+import { SearchBar, SearchResult } from '@/components/SearchBar'; // Ensure SearchResult is exported from SearchBar
 
 interface CreateSessionTraineesSectionProps {
   searchQuery: string;
   onChangeSearch: (query: string) => void;
-  selectedBatches: Batch[];
+  selectedBatches: SearchResult[];
   onRemoveBatch: (id: string) => void;
+  searchResults: SearchResult[];
+  onSelectSearchResult: (batch: SearchResult) => void;
 }
 
 export const CreateSessionTraineesSection: React.FC<CreateSessionTraineesSectionProps> = ({
@@ -21,6 +19,8 @@ export const CreateSessionTraineesSection: React.FC<CreateSessionTraineesSection
   onChangeSearch,
   selectedBatches,
   onRemoveBatch,
+  searchResults,
+  onSelectSearchResult,
 }) => {
   return (
     <View style={styles.container}>
@@ -29,31 +29,24 @@ export const CreateSessionTraineesSection: React.FC<CreateSessionTraineesSection
       <View style={styles.fieldContainer}>
         <Text style={styles.label}>Assign Batches</Text>
 
-        <View style={styles.searchContainer}>
-          <Ionicons name="search" size={20} color={colors.text.secondary} style={styles.searchIcon} />
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Search trainees or batches..."
-            placeholderTextColor={colors.text.secondary}
-            value={searchQuery}
-            onChangeText={onChangeSearch}
-          />
-        </View>
+        {/* The SearchBar now handles the dropdown automatically! */}
+        <SearchBar 
+          value={searchQuery}
+          onChangeText={onChangeSearch}
+          placeholder="Search trainees or batches..."
+          results={searchResults}
+          onSelectResult={onSelectSearchResult}
+        />
 
+        {/* Selected Batches Chips */}
         {selectedBatches.length > 0 && (
           <View style={styles.chipsContainer}>
             {selectedBatches.map((batch) => (
-              <View key={batch.id} style={styles.chip}>
-                <Text style={styles.chipText}>{batch.name}</Text>
-                <TouchableOpacity 
-                  onPress={() => onRemoveBatch(batch.id)} 
-                  hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-                  style={styles.closeButton}
-                >
-                  {/* Changed the icon color to primary to match the green theme */}
-                  <Ionicons name="close" size={18} color={colors.primary} />
-                </TouchableOpacity>
-              </View>
+              <Chip 
+                key={batch.id} 
+                label={batch.name} 
+                onClose={() => onRemoveBatch(batch.id)} 
+              />
             ))}
           </View>
         )}
@@ -65,6 +58,7 @@ export const CreateSessionTraineesSection: React.FC<CreateSessionTraineesSection
 const styles = StyleSheet.create({
   container: {
     marginBottom: spacing.xl,
+    zIndex: 1000, // Ensure this entire section can float above subsequent sections
   },
   sectionHeader: {
     fontSize: 12,
@@ -75,6 +69,7 @@ const styles = StyleSheet.create({
   },
   fieldContainer: {
     marginBottom: spacing.l,
+    zIndex: 1000, 
   },
   label: {
     fontSize: 14,
@@ -82,47 +77,9 @@ const styles = StyleSheet.create({
     color: colors.text.primary,
     marginBottom: spacing.s,
   },
-  searchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.surface,
-    borderRadius: spacing.borderRadius,
-    paddingHorizontal: spacing.m,
-    marginBottom: spacing.m,
-  },
-  searchIcon: {
-    marginRight: spacing.s,
-  },
-  searchInput: {
-    flex: 1,
-    paddingVertical: 14,
-    fontSize: 16,
-    color: colors.text.primary,
-  },
   chipsContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: spacing.s,
-  },
-  chip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.primaryLight, // Using your new deep green color
-    borderRadius: 20,
-    paddingVertical: 8, // Slightly increased padding for better touch target
-    paddingLeft: 14,
-    paddingRight: 10,
-  },
-  chipText: {
-    fontSize: 14,
-    color: colors.primary, // Make text bright green to pop against the dark green background
-    fontWeight: '500',
-    marginRight: 4,
-  },
-  closeButton: {
-    // Completely removed backgroundColor and borderRadius
-    padding: 2,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
 });

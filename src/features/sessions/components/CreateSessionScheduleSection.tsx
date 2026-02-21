@@ -5,6 +5,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { CustomToggle } from '@/components/CustomToggle';
 import { colors } from '@/constants/colors';
 import { spacing } from '@/constants/spacing';
+import { SelectorInput } from '@/components/SelectorInput';
 
 const WEEKDAYS = [
   { label: 'S', value: 'Sun' },
@@ -32,26 +33,6 @@ interface CreateSessionScheduleSectionProps {
   onPressStartTime: () => void;
   onPressEndTime: () => void;
 }
-
-interface SelectorInputProps {
-  label: string;
-  value: string;
-  placeholder: string;
-  icon: keyof typeof Ionicons.glyphMap;
-  onPress: () => void;
-}
-
-const SelectorInput = ({ label, value, placeholder, icon, onPress }: SelectorInputProps) => (
-  <View style={styles.fieldContainer}>
-    <Text style={styles.label}>{label}</Text>
-    <TouchableOpacity style={styles.inputWithIcon} onPress={onPress}>
-      <Text style={[styles.inputValue, !value && styles.placeholderText]}>
-        {value || placeholder}
-      </Text>
-      <Ionicons name={icon} size={20} color={colors.text.secondary} />
-    </TouchableOpacity>
-  </View>
-);
 
 export const CreateSessionScheduleSection: React.FC<CreateSessionScheduleSectionProps> = ({
   isRepeating,
@@ -181,22 +162,6 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: colors.text.primary,
     marginBottom: spacing.s,
-  },
-  inputWithIcon: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: colors.surface,
-    borderRadius: spacing.borderRadius,
-    paddingHorizontal: spacing.m,
-    paddingVertical: 14,
-  },
-  inputValue: {
-    fontSize: 16,
-    color: colors.text.primary,
-  },
-  placeholderText: {
-    color: colors.text.secondary,
   },
   daysRow: {
     flexDirection: 'row',

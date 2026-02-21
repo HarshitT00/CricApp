@@ -3,6 +3,7 @@ import { View, Text, TextInput, StyleSheet } from 'react-native';
 
 import { colors } from '@/constants/colors';
 import { spacing } from '@/constants/spacing';
+import { SelectorInput } from '@/components/SelectorInput';
 
 interface CreateSessionDetailsSectionProps {
   name: string;
@@ -30,16 +31,13 @@ export const CreateSessionDetailsSection: React.FC<CreateSessionDetailsSectionPr
           onChangeText={onChangeName}
         />
       </View>
-      <View style={styles.fieldContainer}>
-        <Text style={styles.label}>Faculty</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Select Facility"
-          placeholderTextColor={colors.text.secondary}
-          value={facility}
-          onChangeText={onChangeFacility}
+        <SelectorInput 
+            label="Facility" 
+            value={facility} 
+            placeholder="Select Facility" 
+            icon="location-outline" // or "chevron-forward"
+            onPress={() => console.log('Open facility picker')} 
         />
-      </View>
     </View>
   );
 };
