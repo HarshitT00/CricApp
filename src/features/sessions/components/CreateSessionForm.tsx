@@ -95,18 +95,18 @@ export const CreateSessionForm: React.FC<CreateSessionFormProps> = ({ onSubmit }
         isRepeating={isRepeating}
         onToggleRepeat={setIsRepeating}
         date={date}
+        onChangeDate={setDate}
         startDate={startDate}
+        onChangeStartDate={setStartDate}
         endDate={endDate}
+        onChangeEndDate={setEndDate} 
         startTime={startTime}
+        onChangeStartTime={setStartTime}
         endTime={endTime}
+        onChangeEndTime={setEndTime} 
         selectedDays={selectedDays}
         onToggleDay={handleToggleDay}
-        onPressDate={() => console.log('Open Date Picker')}
-        onPressStartDate={() => console.log('Open Start Date Picker')}
-        onPressEndDate={() => console.log('Open End Date Picker')}
-        onPressStartTime={() => console.log('Open Start Time Picker')}
-        onPressEndTime={() => console.log('Open End Time Picker')}
-      />
+    />
 
       {/* 3. Trainees */}
       <CreateSessionTraineesSection

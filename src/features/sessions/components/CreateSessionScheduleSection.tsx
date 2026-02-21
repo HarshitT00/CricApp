@@ -1,11 +1,12 @@
-import { Ionicons } from '@expo/vector-icons';
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { CustomToggle } from '@/components/CustomToggle';
 import { colors } from '@/constants/colors';
 import { spacing } from '@/constants/spacing';
 import { SelectorInput } from '@/components/SelectorInput';
+import { CustomDatePicker } from '@/components/CustomDatePicker';
+import { CustomTimePicker } from '@/components/CustomTimePicker';
 
 const WEEKDAYS = [
   { label: 'S', value: 'Sun' },
@@ -17,6 +18,8 @@ const WEEKDAYS = [
   { label: 'S', value: 'Sat' },
 ];
 
+type FieldType = 'date' | 'startDate' | 'endDate' | 'startTime' | 'endTime' | null;
+
 interface CreateSessionScheduleSectionProps {
   isRepeating: boolean;
   onToggleRepeat: (val: boolean) => void;
@@ -27,11 +30,12 @@ interface CreateSessionScheduleSectionProps {
   endTime: string;
   selectedDays: string[];
   onToggleDay: (day: string) => void;
-  onPressDate: () => void;
-  onPressStartDate: () => void;
-  onPressEndDate: () => void;
-  onPressStartTime: () => void;
-  onPressEndTime: () => void;
+  // Updated from onPress... to onChange... to handle selection internally
+  onChangeDate: (date: string) => void;
+  onChangeStartDate: (date: string) => void;
+  onChangeEndDate: (date: string) => void;
+  onChangeStartTime: (time: string) => void;
+  onChangeEndTime: (time: string) => void;
 }
 
 export const CreateSessionScheduleSection: React.FC<CreateSessionScheduleSectionProps> = ({
@@ -44,12 +48,40 @@ export const CreateSessionScheduleSection: React.FC<CreateSessionScheduleSection
   endTime,
   selectedDays,
   onToggleDay,
-  onPressDate,
-  onPressStartDate,
-  onPressEndDate,
-  onPressStartTime,
-  onPressEndTime,
+  onChangeDate,
+  onChangeStartDate,
+  onChangeEndDate,
+  onChangeStartTime,
+  onChangeEndTime,
 }) => {
+  // State to manage which picker is open and for which field
+  const [datePickerVisible, setDatePickerVisible] = useState(false);
+  const [timePickerVisible, setTimePickerVisible] = useState(false);
+  const [activeField, setActiveField] = useState<FieldType>(null);
+
+  const openDatePicker = (field: 'date' | 'startDate' | 'endDate') => {
+    setActiveField(field);
+    setDatePickerVisible(true);
+  };
+
+  const openTimePicker = (field: 'startTime' | 'endTime') => {
+    setActiveField(field);
+    setTimePickerVisible(true);
+  };
+
+  const handleDateSelect = (selectedDate: string) => {
+    if (activeField === 'date') onChangeDate(selectedDate);
+    if (activeField === 'startDate') onChangeStartDate(selectedDate);
+    if (activeField === 'endDate') onChangeEndDate(selectedDate);
+    setDatePickerVisible(false);
+  };
+
+  const handleTimeSelect = (selectedTime: string) => {
+    if (activeField === 'startTime') onChangeStartTime(selectedTime);
+    if (activeField === 'endTime') onChangeEndTime(selectedTime);
+    setTimePickerVisible(false);
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.sectionHeader}>SCHEDULE</Text>
@@ -65,7 +97,7 @@ export const CreateSessionScheduleSection: React.FC<CreateSessionScheduleSection
                 value={startDate}
                 placeholder="Select date"
                 icon="calendar-outline"
-                onPress={onPressStartDate}
+                onPress={() => openDatePicker('startDate')}
               />
             </View>
             <View style={styles.halfField}>
@@ -74,7 +106,7 @@ export const CreateSessionScheduleSection: React.FC<CreateSessionScheduleSection
                 value={endDate}
                 placeholder="Select date"
                 icon="calendar-outline"
-                onPress={onPressEndDate}
+                onPress={() => openDatePicker('endDate')}
               />
             </View>
           </View>
@@ -104,7 +136,7 @@ export const CreateSessionScheduleSection: React.FC<CreateSessionScheduleSection
           value={date}
           placeholder="Select date"
           icon="calendar-outline"
-          onPress={onPressDate}
+          onPress={() => openDatePicker('date')}
         />
       )}
 
@@ -115,7 +147,7 @@ export const CreateSessionScheduleSection: React.FC<CreateSessionScheduleSection
             value={startTime}
             placeholder="Select time"
             icon="time-outline"
-            onPress={onPressStartTime}
+            onPress={() => openTimePicker('startTime')}
           />
         </View>
         <View style={styles.halfField}>
@@ -124,10 +156,25 @@ export const CreateSessionScheduleSection: React.FC<CreateSessionScheduleSection
             value={endTime}
             placeholder="Select time"
             icon="time-outline"
-            onPress={onPressEndTime}
+            onPress={() => openTimePicker('endTime')}
           />
         </View>
       </View>
+      {datePickerVisible && (
+        <CustomDatePicker
+          visible={datePickerVisible}
+          onClose={() => setDatePickerVisible(false)}
+          onSelectDate={handleDateSelect}
+        />
+      )}
+
+      {timePickerVisible && (
+        <CustomTimePicker
+          visible={timePickerVisible}
+          onClose={() => setTimePickerVisible(false)}
+          onSelectTime={handleTimeSelect}
+        />
+      )}
     </View>
   );
 };
