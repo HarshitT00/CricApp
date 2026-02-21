@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, Switch, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors } from '@/constants/colors';
 import { spacing } from '@/constants/spacing';
@@ -30,6 +30,17 @@ interface CreateSessionScheduleSectionProps {
   onPressStartTime: () => void;
   onPressEndTime: () => void;
 }
+
+// Add this custom component inside or above CreateSessionScheduleSection
+const CustomToggle = ({ value, onValueChange }: { value: boolean; onValueChange: (v: boolean) => void }) => (
+  <TouchableOpacity
+    onPress={() => onValueChange(!value)}
+    style={[styles.toggleTrack, value && styles.toggleTrackActive]}
+    activeOpacity={0.8}
+  >
+    <View style={[styles.toggleThumb, value && styles.toggleThumbActive]} />
+  </TouchableOpacity>
+);
 
 export const CreateSessionScheduleSection: React.FC<CreateSessionScheduleSectionProps> = ({
   isRepeating,
@@ -66,15 +77,9 @@ export const CreateSessionScheduleSection: React.FC<CreateSessionScheduleSection
 
       {/* Repeat Toggle */}
       <View style={styles.toggleRow}>
-        <Text style={styles.label}>Repeat Session</Text>
-        <Switch
-          value={isRepeating}
-          onValueChange={onToggleRepeat}
-          trackColor={{ false: colors.surfaceLight, true: colors.primary }}
-          thumbColor={colors.text.primary}
-          ios_backgroundColor={colors.surfaceLight}
-        />
-      </View>
+  <Text style={styles.toggleLabel}>Repeat Session</Text>
+  <CustomToggle value={isRepeating} onValueChange={onToggleRepeat} />
+</View>
 
       {/* Conditionally Render Date Fields */}
       {isRepeating ? (
@@ -171,14 +176,15 @@ const styles = StyleSheet.create({
     marginBottom: spacing.m,
   },
   toggleRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: spacing.l,
-    backgroundColor: colors.surface,
-    padding: spacing.m,
-    borderRadius: spacing.borderRadius,
-  },
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  marginBottom: spacing.l,
+  backgroundColor: colors.surface,
+  borderRadius: spacing.borderRadius,
+  paddingHorizontal: spacing.m,
+  paddingVertical: spacing.m,
+},
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -236,4 +242,31 @@ const styles = StyleSheet.create({
     color: colors.background, 
     fontWeight: 'bold',
   },
+
+  toggleTrack: {
+  width: 50,
+  height: 28,
+  borderRadius: 14,
+  backgroundColor: colors.surfaceLight,
+  padding: 3,
+  justifyContent: 'center',
+},
+toggleTrackActive: {
+  backgroundColor: colors.primary,
+},
+toggleThumb: {
+  width: 22,
+  height: 22,
+  borderRadius: 11,
+  backgroundColor: colors.text.primary,
+  alignSelf: 'flex-start',
+},
+toggleThumbActive: {
+  alignSelf: 'flex-end',
+},
+toggleLabel: {
+  fontSize: 14,
+  fontWeight: '500',
+  color: colors.text.primary,
+},
 });
