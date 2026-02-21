@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
+
 import { colors } from '@/constants/colors';
 import { spacing } from '@/constants/spacing';
+
 import { CreateSessionDetailsSection } from './CreateSessionDetailsSection';
 import { CreateSessionScheduleSection } from './CreateSessionScheduleSection';
 
@@ -25,11 +27,7 @@ export const CreateSessionForm: React.FC<CreateSessionFormProps> = ({ onSubmit }
 
   // Handlers
   const handleToggleDay = (day: string) => {
-    setSelectedDays(prev => 
-      prev.includes(day) 
-        ? prev.filter(d => d !== day) 
-        : [...prev, day]
-    );
+    setSelectedDays(prev => (prev.includes(day) ? prev.filter(d => d !== day) : [...prev, day]));
   };
 
   const handleSubmit = () => {
@@ -44,13 +42,12 @@ export const CreateSessionForm: React.FC<CreateSessionFormProps> = ({ onSubmit }
         startTime,
         endTime,
         selectedDays: isRepeating ? selectedDays : [],
-      }
+      },
     });
   };
 
   return (
     <View style={styles.container}>
-      
       {/* 1. Session Details */}
       <CreateSessionDetailsSection
         name={name}
@@ -76,7 +73,7 @@ export const CreateSessionForm: React.FC<CreateSessionFormProps> = ({ onSubmit }
         onPressStartTime={() => console.log('Open Start Time Picker')}
         onPressEndTime={() => console.log('Open End Time Picker')}
       />
-      
+
       {/* TODO: Add TraineesSection here later */}
 
       <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>

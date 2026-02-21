@@ -1,31 +1,52 @@
-import React from 'react';
-import { ScrollView, StyleSheet, View, Text, TouchableOpacity, FlatList, Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import React from 'react';
+import {
+  ScrollView,
+  StyleSheet,
+  View,
+  Text,
+  TouchableOpacity,
+  FlatList,
+  Dimensions,
+} from 'react-native';
+
 import { ScreenWrapper } from '@/components/ScreenWrapper';
-import { HomeHeader } from '@/features/home/components/HomeHeader';
-import { SessionCard } from '@/components/SessionCard'; 
-import { AttendanceButton } from '@/features/home/components/AttendanceButton';
-import { StatsGrid } from '@/features/home/components/StatsGrid';
-import { VerificationList } from '@/features/home/components/VerificationList';
+import { SessionCard } from '@/components/SessionCard';
 import { colors } from '@/constants/colors';
 import { spacing } from '@/constants/spacing';
-import { Session } from '@/types/Session';
+import { AttendanceButton } from '@/features/home/components/AttendanceButton';
+import { HomeHeader } from '@/features/home/components/HomeHeader';
+import { StatsGrid } from '@/features/home/components/StatsGrid';
+import { VerificationList } from '@/features/home/components/VerificationList';
 import { RootStackParamList } from '@/navigation/types';
+import { Session } from '@/types/Session';
 
 const MOCK_SESSIONS: Session[] = [
   {
-    id: '1', title: 'U16 Nets Practice', location: 'Pitch 3, North Wing', time: '07:00 AM',
-    image: 'https://images.unsplash.com/photo-1531415074968-036ba1b575da?q=80&w=2067', status: 'UPCOMING',
+    id: '1',
+    title: 'U16 Nets Practice',
+    location: 'Pitch 3, North Wing',
+    time: '07:00 AM',
+    image: 'https://images.unsplash.com/photo-1531415074968-036ba1b575da?q=80&w=2067',
+    status: 'UPCOMING',
   },
   {
-    id: '2', title: 'Fielding Drills', location: 'Main Ground', time: '09:30 AM',
-    image: 'https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?q=80&w=2067', status: 'UPCOMING',
+    id: '2',
+    title: 'Fielding Drills',
+    location: 'Main Ground',
+    time: '09:30 AM',
+    image: 'https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?q=80&w=2067',
+    status: 'UPCOMING',
   },
   {
-    id: '3', title: 'Batting Practice', location: 'Pitch 1, South Wing', time: '02:00 PM',
-    image: 'https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?q=80&w=2067', status: 'UPCOMING',
-  }
+    id: '3',
+    title: 'Batting Practice',
+    location: 'Pitch 1, South Wing',
+    time: '02:00 PM',
+    image: 'https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?q=80&w=2067',
+    status: 'UPCOMING',
+  },
 ];
 
 const { width } = Dimensions.get('window');
@@ -35,38 +56,33 @@ export function HomeScreen() {
 
   return (
     <ScreenWrapper>
-      <ScrollView 
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
+      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         <HomeHeader />
-        
-        <SectionHeader 
-          title="Today's Sessions" 
-          action="View All" 
-          onPress={() => navigation.navigate('SessionList')} 
+
+        <SectionHeader
+          title="Today's Sessions"
+          action="View All"
+          onPress={() => navigation.navigate('SessionList')}
         />
         <FlatList
           data={MOCK_SESSIONS}
-          keyExtractor={(item) => item.id}
+          keyExtractor={item => item.id}
           horizontal
           pagingEnabled={true}
           showsHorizontalScrollIndicator={false}
           style={styles.flatListBreakout}
-          
           renderItem={({ item }) => (
             <View style={styles.cardWrapper}>
-               <SessionCard session={item} />
+              <SessionCard session={item} />
             </View>
           )}
         />
-        
+
         <View style={styles.spacer} />
         <AttendanceButton onPress={() => console.log('Start Attendance')} />
         <StatsGrid />
         <SectionHeader title="Pending Verifications" badge={2} />
         <VerificationList />
-        
       </ScrollView>
     </ScreenWrapper>
   );
@@ -95,11 +111,11 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.xxl,
   },
   flatListBreakout: {
-    marginHorizontal: -spacing.screenPadding, 
+    marginHorizontal: -spacing.screenPadding,
     flexGrow: 0,
   },
   cardWrapper: {
-    width: width, 
+    width: width,
     paddingHorizontal: spacing.screenPadding,
   },
   spacer: {

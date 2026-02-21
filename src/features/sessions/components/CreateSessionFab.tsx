@@ -1,6 +1,7 @@
+import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { TouchableOpacity, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+
 import { colors } from '@/constants/colors';
 
 interface CreateSessionFabProps {
@@ -9,11 +10,7 @@ interface CreateSessionFabProps {
 
 export const CreateSessionFab = ({ onPress }: CreateSessionFabProps) => {
   return (
-    <TouchableOpacity 
-      style={styles.fab} 
-      onPress={onPress}
-      activeOpacity={0.8}
-    >
+    <TouchableOpacity style={styles.fab} onPress={onPress} activeOpacity={0.8}>
       <Ionicons name="add" size={32} color="#000" />
     </TouchableOpacity>
   );

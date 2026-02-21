@@ -1,6 +1,7 @@
+import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, DimensionValue } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+
 import { colors } from '@/constants/colors';
 import { spacing } from '@/constants/spacing';
 import { Session } from '@/types/Session';
@@ -14,19 +15,14 @@ interface SessionCardProps {
 
 export const SessionCard = ({ session, onPress, width, height = 180 }: SessionCardProps) => {
   return (
-    <TouchableOpacity 
-      activeOpacity={0.9} 
+    <TouchableOpacity
+      activeOpacity={0.9}
       onPress={onPress}
       // Apply the height prop here
-      style={[styles.cardContainer, { width: width || '100%', height }]} 
-    >
-      <Image 
-        source={{ uri: session.image }} 
-        style={styles.image}
-        resizeMode="cover"
-      />
+      style={[styles.cardContainer, { width: width || '100%', height }]}>
+      <Image source={{ uri: session.image }} style={styles.image} resizeMode="cover" />
       <View style={styles.overlay} />
-      
+
       <View style={styles.content}>
         <View style={[styles.badge, session.status === 'LIVE' && styles.liveBadge]}>
           <Text style={styles.badgeText}>
@@ -36,10 +32,14 @@ export const SessionCard = ({ session, onPress, width, height = 180 }: SessionCa
 
         <View style={styles.footer}>
           <View style={styles.infoContainer}>
-            <Text style={styles.title} numberOfLines={1}>{session.title}</Text>
+            <Text style={styles.title} numberOfLines={1}>
+              {session.title}
+            </Text>
             <View style={styles.row}>
               <Ionicons name="location-sharp" size={14} color={colors.text.secondary} />
-              <Text style={styles.location} numberOfLines={1}>{session.location}</Text>
+              <Text style={styles.location} numberOfLines={1}>
+                {session.location}
+              </Text>
             </View>
           </View>
           <Text style={styles.time}>{session.time}</Text>

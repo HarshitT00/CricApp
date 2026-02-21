@@ -1,6 +1,7 @@
+import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+
 import { colors } from '@/constants/colors';
 import { spacing } from '@/constants/spacing';
 
@@ -23,7 +24,7 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = ({
     <View style={styles.container}>
       {/* Left Icon Button */}
       {leftIconName && onLeftPress && (
-        <TouchableOpacity 
+        <TouchableOpacity
           onPress={onLeftPress}
           style={[styles.sideComponent, styles.leftComponent]}
           hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }} // Increased hitSlop for easy tapping
@@ -41,11 +42,10 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = ({
 
       {/* Right Icon Button */}
       {rightIconName && onRightPress && (
-        <TouchableOpacity 
+        <TouchableOpacity
           onPress={onRightPress}
           style={[styles.sideComponent, styles.rightComponent]}
-          hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
-        >
+          hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}>
           <Ionicons name={rightIconName} size={28} color={colors.text.primary} />
         </TouchableOpacity>
       )}
@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.m,
     position: 'relative',
     // We can keep the padding for the title, but the absolute icons will ignore it
-    paddingHorizontal: spacing.screenPadding, 
+    paddingHorizontal: spacing.screenPadding,
   },
   sideComponent: {
     position: 'absolute',
@@ -72,11 +72,11 @@ const styles = StyleSheet.create({
   },
   leftComponent: {
     // Changed from spacing.screenPadding (20) to spacing.m (12) or spacing.l (16) to push it left
-    left: spacing.l, 
+    left: spacing.l,
   },
   rightComponent: {
     // Changed to match the left side, pushing it further right
-    right: spacing.l, 
+    right: spacing.l,
   },
   titleContainer: {
     flex: 1,

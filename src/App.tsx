@@ -1,9 +1,11 @@
 import 'react-native-gesture-handler';
+import { StatusBar } from 'expo-status-bar';
+import * as SystemUI from 'expo-system-ui';
 import React, { useEffect } from 'react';
+import { StyleSheet } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import * as SystemUI from 'expo-system-ui';
-import { StatusBar } from 'expo-status-bar';
+
 import { AppNavigator } from '@/navigation/AppNavigator';
 
 export default function App() {
@@ -12,7 +14,7 @@ export default function App() {
   }, []);
 
   return (
-    <GestureHandlerRootView style={{ flex: 1, backgroundColor: '#0d291e' }}>
+    <GestureHandlerRootView style={styles.container}>
       <StatusBar style="light" />
       <SafeAreaProvider>
         <AppNavigator />
@@ -20,3 +22,10 @@ export default function App() {
     </GestureHandlerRootView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#0d291e',
+  },
+});

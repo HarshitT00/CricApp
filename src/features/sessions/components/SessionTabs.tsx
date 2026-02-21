@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+
 import { colors } from '@/constants/colors';
 import { spacing } from '@/constants/spacing';
 
@@ -13,19 +14,15 @@ interface SessionTabsProps {
 export const SessionTabs = ({ activeTab, onTabChange }: SessionTabsProps) => {
   return (
     <View style={styles.container}>
-      <TouchableOpacity 
-        style={[styles.tab, activeTab === 'Active' && styles.activeTab]} 
-        onPress={() => onTabChange('Active')}
-      >
-        <Text style={[styles.tabText, activeTab === 'Active' && styles.activeTabText]}>
-          Active
-        </Text>
+      <TouchableOpacity
+        style={[styles.tab, activeTab === 'Active' && styles.activeTab]}
+        onPress={() => onTabChange('Active')}>
+        <Text style={[styles.tabText, activeTab === 'Active' && styles.activeTabText]}>Active</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity 
-        style={[styles.tab, activeTab === 'Completed' && styles.activeTab]} 
-        onPress={() => onTabChange('Completed')}
-      >
+      <TouchableOpacity
+        style={[styles.tab, activeTab === 'Completed' && styles.activeTab]}
+        onPress={() => onTabChange('Completed')}>
         <Text style={[styles.tabText, activeTab === 'Completed' && styles.activeTabText]}>
           Completed
         </Text>
@@ -38,7 +35,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     backgroundColor: colors.surface,
-    marginHorizontal: spacing.xs, 
+    marginHorizontal: spacing.xs,
     borderRadius: 12,
     padding: 4,
     marginBottom: spacing.l,

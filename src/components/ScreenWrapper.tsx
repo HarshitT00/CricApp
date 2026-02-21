@@ -1,25 +1,20 @@
-import { colors } from '@/constants/colors';
-import { spacing } from '@/constants/spacing';
 import React from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { colors } from '@/constants/colors';
+import { spacing } from '@/constants/spacing';
+
 interface Props {
   children: React.ReactNode;
-  style?: ViewStyle; 
+  style?: ViewStyle;
   edges?: readonly ('top' | 'right' | 'bottom' | 'left')[];
 }
 
-export const ScreenWrapper = ({ 
-  children, 
-  style, 
-  edges = ['top'] 
-}: Props) => {
+export const ScreenWrapper = ({ children, style, edges = ['top'] }: Props) => {
   return (
     <SafeAreaView style={styles.safeArea} edges={edges}>
-      <View style={[styles.content, style]}>
-        {children}
-      </View>
+      <View style={[styles.content, style]}>{children}</View>
     </SafeAreaView>
   );
 };
@@ -31,6 +26,6 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    paddingHorizontal: spacing.screenPadding, 
+    paddingHorizontal: spacing.screenPadding,
   },
 });

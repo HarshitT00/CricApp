@@ -1,6 +1,7 @@
+import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+
 import { colors } from '@/constants/colors';
 import { spacing } from '@/constants/spacing';
 
@@ -24,9 +25,7 @@ export const HomeHeader = () => {
     <View style={styles.container}>
       <View>
         <Text style={styles.date}>{dateString}</Text>
-        <Text style={styles.greeting}>
-          {getGreeting()}, Coach Harshit
-        </Text>
+        <Text style={styles.greeting}>{getGreeting()}, Coach Harshit</Text>
       </View>
       <View style={styles.bellContainer}>
         <Ionicons name="notifications-outline" size={28} color={colors.icon} />
@@ -59,7 +58,7 @@ const styles = StyleSheet.create({
   bellContainer: {
     position: 'relative',
     padding: spacing.xs,
-    backgroundColor: colors.surfaceLight, 
+    backgroundColor: colors.surfaceLight,
     borderRadius: 12,
   },
   badge: {

@@ -1,12 +1,13 @@
 import 'react-native-gesture-handler';
-import React from 'react';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
-import { createStackNavigator, CardStyleInterpolators} from '@react-navigation/stack';
-import { HomeScreen } from '@/features/home/HomeScreen';
-import { SessionListScreen } from '@/features/sessions/SessionListScreen';
+import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
+import React from 'react';
+
 import { colors } from '@/constants/colors';
-import { RootStackParamList } from '@/navigation/types';
+import { HomeScreen } from '@/features/home/HomeScreen';
 import { CreateSessionScreen } from '@/features/sessions/CreateSession';
+import { SessionListScreen } from '@/features/sessions/SessionListScreen';
+import { RootStackParamList } from '@/navigation/types';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -65,8 +66,7 @@ export function AppNavigator() {
           },
           gestureEnabled: true,
           gestureDirection: 'horizontal',
-        }}
-      >
+        }}>
         <Stack.Screen
           name="Home"
           component={HomeScreen}
@@ -79,7 +79,7 @@ export function AppNavigator() {
           name="SessionList"
           component={SessionListScreen}
           options={{
-            headerShown: false, 
+            headerShown: false,
             title: 'All Sessions',
           }}
         />
@@ -88,7 +88,7 @@ export function AppNavigator() {
           name="CreateSession"
           component={CreateSessionScreen}
           options={{
-            headerShown: false, 
+            headerShown: false,
             title: 'Create Sessions',
           }}
         />

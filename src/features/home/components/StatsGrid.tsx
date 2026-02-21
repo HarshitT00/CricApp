@@ -1,26 +1,16 @@
+import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+
 import { colors } from '@/constants/colors';
 import { spacing } from '@/constants/spacing';
 
 export const StatsGrid = () => {
   return (
     <View style={styles.container}>
-      <StatCard 
-        label="PRESENT" 
-        value="24" 
-        sub="Students checked in" 
-        icon="people" 
-      />
+      <StatCard label="PRESENT" value="24" sub="Students checked in" icon="people" />
       <View style={{ width: spacing.m }} />
-      <StatCard 
-        label="AVG. RATE" 
-        value="92%" 
-        sub="Weekly average" 
-        icon="stats-chart" 
-        trend="+2%" 
-      />
+      <StatCard label="AVG. RATE" value="92%" sub="Weekly average" icon="stats-chart" trend="+2%" />
     </View>
   );
 };

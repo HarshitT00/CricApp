@@ -1,6 +1,8 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import React from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+
+import { CustomToggle } from '@/components/CustomToggle';
 import { colors } from '@/constants/colors';
 import { spacing } from '@/constants/spacing';
 
@@ -31,15 +33,24 @@ interface CreateSessionScheduleSectionProps {
   onPressEndTime: () => void;
 }
 
-// Add this custom component inside or above CreateSessionScheduleSection
-const CustomToggle = ({ value, onValueChange }: { value: boolean; onValueChange: (v: boolean) => void }) => (
-  <TouchableOpacity
-    onPress={() => onValueChange(!value)}
-    style={[styles.toggleTrack, value && styles.toggleTrackActive]}
-    activeOpacity={0.8}
-  >
-    <View style={[styles.toggleThumb, value && styles.toggleThumbActive]} />
-  </TouchableOpacity>
+interface SelectorInputProps {
+  label: string;
+  value: string;
+  placeholder: string;
+  icon: keyof typeof Ionicons.glyphMap;
+  onPress: () => void;
+}
+
+const SelectorInput = ({ label, value, placeholder, icon, onPress }: SelectorInputProps) => (
+  <View style={styles.fieldContainer}>
+    <Text style={styles.label}>{label}</Text>
+    <TouchableOpacity style={styles.inputWithIcon} onPress={onPress}>
+      <Text style={[styles.inputValue, !value && styles.placeholderText]}>
+        {value || placeholder}
+      </Text>
+      <Ionicons name={icon} size={20} color={colors.text.secondary} />
+    </TouchableOpacity>
+  </View>
 );
 
 export const CreateSessionScheduleSection: React.FC<CreateSessionScheduleSectionProps> = ({
@@ -58,66 +69,45 @@ export const CreateSessionScheduleSection: React.FC<CreateSessionScheduleSection
   onPressStartTime,
   onPressEndTime,
 }) => {
-
-  const SelectorInput = ({ label, value, placeholder, icon, onPress }: any) => (
-    <View style={styles.fieldContainer}>
-      <Text style={styles.label}>{label}</Text>
-      <TouchableOpacity style={styles.inputWithIcon} onPress={onPress}>
-        <Text style={[styles.inputValue, !value && styles.placeholderText]}>
-          {value || placeholder}
-        </Text>
-        <Ionicons name={icon} size={20} color={colors.text.secondary} />
-      </TouchableOpacity>
-    </View>
-  );
-
   return (
     <View style={styles.container}>
       <Text style={styles.sectionHeader}>SCHEDULE</Text>
 
-      {/* Repeat Toggle */}
-      <View style={styles.toggleRow}>
-  <Text style={styles.toggleLabel}>Repeat Session</Text>
-  <CustomToggle value={isRepeating} onValueChange={onToggleRepeat} />
-</View>
+      <CustomToggle label="Recurring Session" value={isRepeating} onValueChange={onToggleRepeat} />
 
-      {/* Conditionally Render Date Fields */}
       {isRepeating ? (
         <>
-          {/* REPEATING ON: Start Date & End Date Row */}
           <View style={styles.row}>
-            <View style={{ flex: 1, marginRight: spacing.m }}>
-              <SelectorInput 
-                label="Start Date" 
-                value={startDate} 
-                placeholder="Select date" 
-                icon="calendar-outline" 
-                onPress={onPressStartDate} 
+            <View style={styles.halfFieldLeft}>
+              <SelectorInput
+                label="Start Date"
+                value={startDate}
+                placeholder="Select date"
+                icon="calendar-outline"
+                onPress={onPressStartDate}
               />
             </View>
-            <View style={{ flex: 1 }}>
-              <SelectorInput 
-                label="End Date" 
-                value={endDate} 
-                placeholder="Select date" 
-                icon="calendar-outline" 
-                onPress={onPressEndDate} 
+            <View style={styles.halfField}>
+              <SelectorInput
+                label="End Date"
+                value={endDate}
+                placeholder="Select date"
+                icon="calendar-outline"
+                onPress={onPressEndDate}
               />
             </View>
           </View>
 
-          {/* Days of the week selection */}
           <View style={styles.fieldContainer}>
             <Text style={styles.label}>Repeat On</Text>
             <View style={styles.daysRow}>
-              {WEEKDAYS.map((day) => {
+              {WEEKDAYS.map(day => {
                 const isSelected = selectedDays.includes(day.value);
                 return (
                   <TouchableOpacity
                     key={day.value}
                     style={[styles.dayCircle, isSelected && styles.dayCircleSelected]}
-                    onPress={() => onToggleDay(day.value)}
-                  >
+                    onPress={() => onToggleDay(day.value)}>
                     <Text style={[styles.dayText, isSelected && styles.dayTextSelected]}>
                       {day.label}
                     </Text>
@@ -128,38 +118,35 @@ export const CreateSessionScheduleSection: React.FC<CreateSessionScheduleSection
           </View>
         </>
       ) : (
-        /* REPEATING OFF: Single Date */
-        <SelectorInput 
-          label="Date" 
-          value={date} 
-          placeholder="Select date" 
-          icon="calendar-outline" 
-          onPress={onPressDate} 
+        <SelectorInput
+          label="Date"
+          value={date}
+          placeholder="Select date"
+          icon="calendar-outline"
+          onPress={onPressDate}
         />
       )}
 
-      {/* Start Time & End Time Row (Always visible) */}
       <View style={styles.row}>
-        <View style={{ flex: 1, marginRight: spacing.m }}>
-          <SelectorInput 
-            label="Start Time" 
-            value={startTime} 
-            placeholder="Select time" 
-            icon="time-outline" 
-            onPress={onPressStartTime} 
+        <View style={styles.halfFieldLeft}>
+          <SelectorInput
+            label="Start Time"
+            value={startTime}
+            placeholder="Select time"
+            icon="time-outline"
+            onPress={onPressStartTime}
           />
         </View>
-        <View style={{ flex: 1 }}>
-          <SelectorInput 
-            label="End Time" 
-            value={endTime} 
-            placeholder="Select time" 
-            icon="time-outline" 
-            onPress={onPressEndTime} 
+        <View style={styles.halfField}>
+          <SelectorInput
+            label="End Time"
+            value={endTime}
+            placeholder="Select time"
+            icon="time-outline"
+            onPress={onPressEndTime}
           />
         </View>
       </View>
-
     </View>
   );
 };
@@ -175,19 +162,16 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
     marginBottom: spacing.m,
   },
-  toggleRow: {
-  flexDirection: 'row',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  marginBottom: spacing.l,
-  backgroundColor: colors.surface,
-  borderRadius: spacing.borderRadius,
-  paddingHorizontal: spacing.m,
-  paddingVertical: spacing.m,
-},
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+  },
+  halfField: {
+    flex: 1,
+  },
+  halfFieldLeft: {
+    flex: 1,
+    marginRight: spacing.m,
   },
   fieldContainer: {
     marginBottom: spacing.l,
@@ -239,34 +223,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   dayTextSelected: {
-    color: colors.background, 
+    color: colors.background,
     fontWeight: 'bold',
   },
-
-  toggleTrack: {
-  width: 50,
-  height: 28,
-  borderRadius: 14,
-  backgroundColor: colors.surfaceLight,
-  padding: 3,
-  justifyContent: 'center',
-},
-toggleTrackActive: {
-  backgroundColor: colors.primary,
-},
-toggleThumb: {
-  width: 22,
-  height: 22,
-  borderRadius: 11,
-  backgroundColor: colors.text.primary,
-  alignSelf: 'flex-start',
-},
-toggleThumbActive: {
-  alignSelf: 'flex-end',
-},
-toggleLabel: {
-  fontSize: 14,
-  fontWeight: '500',
-  color: colors.text.primary,
-},
 });

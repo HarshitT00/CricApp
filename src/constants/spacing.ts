@@ -5,7 +5,7 @@ export const spacing = {
   l: 16,
   xl: 24,
   xxl: 32,
-  
-  screenPadding: 20, 
+
+  screenPadding: 20,
   borderRadius: 12,
 };

@@ -1,23 +1,24 @@
+import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+
 import { colors } from '@/constants/colors';
 import { spacing } from '@/constants/spacing';
 
 export const VerificationList = () => {
   return (
     <View>
-      <VerificationItem 
-        name="Arjun K." 
-        status="Face Match (98%)" 
-        time="06:55 AM" 
-        isVerified={true} 
+      <VerificationItem
+        name="Arjun K."
+        status="Face Match (98%)"
+        time="06:55 AM"
+        isVerified={true}
       />
-      <VerificationItem 
-        name="Vihaan S." 
-        status="Geofence Verified" 
-        time="07:02 AM" 
-        isVerified={false} 
+      <VerificationItem
+        name="Vihaan S."
+        status="Geofence Verified"
+        time="07:02 AM"
+        isVerified={false}
       />
     </View>
   );
@@ -25,17 +26,17 @@ export const VerificationList = () => {
 
 const VerificationItem = ({ name, status, time, isVerified }: any) => (
   <View style={styles.item}>
-    <Image 
-      source={{ uri: `https://ui-avatars.com/api/?name=${name}&background=random` }} 
-      style={styles.avatar} 
+    <Image
+      source={{ uri: `https://ui-avatars.com/api/?name=${name}&background=random` }}
+      style={styles.avatar}
     />
     <View style={styles.info}>
       <Text style={styles.name}>{name}</Text>
       <View style={styles.statusRow}>
-        <Ionicons 
-          name={isVerified ? "happy-outline" : "location-outline"} 
-          size={14} 
-          color={colors.text.accent} 
+        <Ionicons
+          name={isVerified ? 'happy-outline' : 'location-outline'}
+          size={14}
+          color={colors.text.accent}
         />
         <Text style={styles.status}>{status}</Text>
       </View>

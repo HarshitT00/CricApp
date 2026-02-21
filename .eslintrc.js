@@ -1,13 +1,7 @@
 module.exports = {
   root: true,
-  extends: [
-    '@react-native',
-    'prettier'
-  ],
-  plugins: [
-    'import',
-    'prettier'
-  ],
+  extends: ['@react-native', 'prettier'],
+  plugins: ['import', 'prettier'],
   settings: {
     'import/resolver': {
       'babel-module': {},
