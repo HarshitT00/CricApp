@@ -2,11 +2,9 @@ import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 import { StyleSheet, ScrollView } from 'react-native';
 
+import { ScreenHeader } from '@/components/ScreenHeader';
 import { ScreenWrapper } from '@/components/ScreenWrapper';
-
-import { ScreenHeader } from '../../components/ScreenHeader';
-
-import { CreateSessionForm } from './components/CreateSessionForm';
+import { CreateSessionForm } from '@/features/sessions/components/CreateSessionForm';
 
 export const CreateSessionScreen = () => {
   const navigation = useNavigation();

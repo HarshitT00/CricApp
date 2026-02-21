@@ -3,9 +3,9 @@ import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
 
 import { colors } from '@/constants/colors';
 import { spacing } from '@/constants/spacing';
-
-import { CreateSessionDetailsSection } from './CreateSessionDetailsSection';
-import { CreateSessionScheduleSection } from './CreateSessionScheduleSection';
+import { CreateSessionDetailsSection } from '@/features/sessions/components/CreateSessionDetailsSection';
+import { CreateSessionScheduleSection } from '@/features/sessions/components/CreateSessionScheduleSection';
+import { Batch, CreateSessionTraineesSection } from '@/features/sessions/components/CreateSessionsTraineesSection';
 
 interface CreateSessionFormProps {
   onSubmit: (sessionData: any) => void;
@@ -24,6 +24,20 @@ export const CreateSessionForm: React.FC<CreateSessionFormProps> = ({ onSubmit }
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  
+  // Starting with the mock batch from your design
+  const [selectedBatches, setSelectedBatches] = useState<Batch[]>([
+    { id: '1', name: 'U-19 Pro Batting'}, { id: '2', name: 'U-19 Pro Bowling' }, { id: '3', name: 'U-17 Bowling' }
+  ]);
+
+  const handleRemoveBatch = (idToRemove: string) => {
+    setSelectedBatches(prev => prev.filter(batch => batch.id !== idToRemove));
+  };
+
+  const handlePressSelectTrainees = () => {
+    console.log('Open trainee selection modal');
+  };
 
   // Handlers
   const handleToggleDay = (day: string) => {
@@ -74,7 +88,13 @@ export const CreateSessionForm: React.FC<CreateSessionFormProps> = ({ onSubmit }
         onPressEndTime={() => console.log('Open End Time Picker')}
       />
 
-      {/* TODO: Add TraineesSection here later */}
+      {/* 3. Trainees */}
+      <CreateSessionTraineesSection
+        searchQuery={searchQuery}
+        onChangeSearch={setSearchQuery}
+        selectedBatches={selectedBatches}
+        onRemoveBatch={handleRemoveBatch}
+      />
 
       <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
         <Text style={styles.submitButtonText}>Create Session</Text>
