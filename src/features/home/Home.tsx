@@ -51,7 +51,7 @@ const MOCK_SESSIONS: Session[] = [
 
 const { width } = Dimensions.get('window');
 
-export function HomeScreen() {
+export function Home() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   return (
@@ -79,7 +79,7 @@ export function HomeScreen() {
         />
 
         <View style={styles.spacer} />
-        <AttendanceButton onPress={() => console.log('Start Attendance')} />
+        <AttendanceButton onPress={() => navigation.navigate('MarkAttendance')} />
         <StatsGrid />
         <SectionHeader title="Pending Verifications" badge={2} />
         <VerificationList />

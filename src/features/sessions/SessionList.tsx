@@ -49,7 +49,7 @@ const ALL_SESSIONS: Session[] = [
   },
 ];
 
-export const SessionListScreen = () => {
+export const SessionList = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [activeTab, setActiveTab] = useState<SessionTabOption>('Active');
   useLayoutEffect(() => {

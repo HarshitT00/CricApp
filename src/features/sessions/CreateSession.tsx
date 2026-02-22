@@ -6,7 +6,7 @@ import { ScreenHeader } from '@/components/ScreenHeader';
 import { ScreenWrapper } from '@/components/ScreenWrapper';
 import { CreateSessionForm } from '@/features/sessions/components/CreateSessionForm';
 
-export const CreateSessionScreen = () => {
+export const CreateSession = () => {
   const navigation = useNavigation();
 
   const handleSessionSubmit = (sessionData: any) => {

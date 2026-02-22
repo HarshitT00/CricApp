@@ -4,10 +4,11 @@ import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/
 import React from 'react';
 
 import { colors } from '@/constants/colors';
-import { HomeScreen } from '@/features/home/HomeScreen';
-import { CreateSessionScreen } from '@/features/sessions/CreateSession';
-import { SessionListScreen } from '@/features/sessions/SessionListScreen';
+import { Home } from '@/features/home/Home';
+import { CreateSession } from '@/features/sessions/CreateSession';
+import { SessionList } from '@/features/sessions/SessionList';
 import { RootStackParamList } from '@/navigation/types';
+import { MarkAttendance } from '@/features/attendance/MarkAttendance';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -69,7 +70,7 @@ export function AppNavigator() {
         }}>
         <Stack.Screen
           name="Home"
-          component={HomeScreen}
+          component={Home}
           options={{
             headerShown: false,
           }}
@@ -77,7 +78,7 @@ export function AppNavigator() {
 
         <Stack.Screen
           name="SessionList"
-          component={SessionListScreen}
+          component={SessionList}
           options={{
             headerShown: false,
             title: 'All Sessions',
@@ -86,10 +87,19 @@ export function AppNavigator() {
 
         <Stack.Screen
           name="CreateSession"
-          component={CreateSessionScreen}
+          component={CreateSession}
           options={{
             headerShown: false,
             title: 'Create Sessions',
+          }}
+        />
+
+        <Stack.Screen
+          name="MarkAttendance"
+          component={MarkAttendance}
+          options={{
+            headerShown: false,
+            title: 'Mark Attendance',
           }}
         />
       </Stack.Navigator>
