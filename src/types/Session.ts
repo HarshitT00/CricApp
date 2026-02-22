@@ -4,5 +4,6 @@ export interface Session {
   location: string;
   time: string;
   image: string;
-  status: 'UPCOMING' | 'COMPLETED' | 'LIVE';
+  batch?: string;
+  status: 'UPCOMING' | 'COMPLETED' | 'LIVE' | 'ONGOING';
 }

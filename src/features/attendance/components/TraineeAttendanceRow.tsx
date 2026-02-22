@@ -6,12 +6,22 @@ import { colors } from '@/constants/colors';
 import { spacing } from '@/constants/spacing';
 import { Player } from '@/types/Player';
 
+type AttendanceStatus = 'PRESENT' | 'ABSENT';
+
 interface TraineeAttendanceRowProps {
   trainee: Player;
-  status: 'PRESENT' | 'ABSENT' | null;
+  status: AttendanceStatus | null;
   onMarkPresent: () => void;
   onMarkAbsent: () => void;
 }
+
+// Role abbreviation map
+const ROLE_ABBR: Record<string, string> = {
+  'Batsman': 'BAT',
+  'Bowler': 'BWL',
+  'All Rounder': 'ALL',
+  'Wicket Keeper': 'WK',
+};
 
 export const TraineeAttendanceRow: React.FC<TraineeAttendanceRowProps> = ({
   trainee,
@@ -19,41 +29,53 @@ export const TraineeAttendanceRow: React.FC<TraineeAttendanceRowProps> = ({
   onMarkPresent,
   onMarkAbsent,
 }) => {
+  const statusLabel =
+    status === 'PRESENT' ? 'Present' :
+    status === 'ABSENT' ? 'Absent' : null;
+
+  const statusColor =
+    status === 'PRESENT' ? colors.status.success :
+    status === 'ABSENT' ? colors.status.error :
+    colors.text.secondary;
+
+  const roleAbbr = ROLE_ABBR[trainee.role] ?? trainee.role.slice(0, 3).toUpperCase();
+
   return (
     <View style={styles.container}>
-      {/* Trainee Info */}
-      <View style={styles.infoSection}>
+      {/* Avatar with role badge */}
+      <View style={styles.avatarWrapper}>
         <View style={styles.avatar}>
-          <Ionicons name="person" size={16} color={colors.text.secondary} />
+          <Ionicons name="person" size={20} color={colors.text.secondary} />
         </View>
-        <View>
-          <Text style={styles.name}>{trainee.name}</Text>
-          <Text style={styles.role}>{trainee.role}</Text>
+        <View style={styles.roleBadge}>
+          <Text style={styles.roleBadgeText}>{roleAbbr}</Text>
         </View>
       </View>
 
-      {/* Attendance Actions - Keeping only P and A */}
-      <View style={styles.actionSection}>
-        {/* Absent Button */}
-        <TouchableOpacity
-          style={[styles.actionButton, status === 'ABSENT' && styles.absentActive]}
-          onPress={onMarkAbsent}
-          activeOpacity={0.7}
-        >
-          <Text style={[styles.actionText, status === 'ABSENT' && styles.absentTextActive]}>
-            A
-          </Text>
-        </TouchableOpacity>
+      {/* Name & Status */}
+      <View style={styles.infoSection}>
+        <Text style={styles.name}>{trainee.name}</Text>
+        <Text style={[styles.subLabel, { color: statusColor }]}>
+          {statusLabel ?? trainee.role}
+        </Text>
+      </View>
 
-        {/* Present Button */}
+      {/* P / A / L Buttons */}
+      <View style={styles.actionSection}>
         <TouchableOpacity
           style={[styles.actionButton, status === 'PRESENT' && styles.presentActive]}
           onPress={onMarkPresent}
           activeOpacity={0.7}
         >
-          <Text style={[styles.actionText, status === 'PRESENT' && styles.presentTextActive]}>
-            P
-          </Text>
+          <Text style={[styles.actionText, status === 'PRESENT' && styles.presentTextActive]}>P</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.actionButton, status === 'ABSENT' && styles.absentActive]}
+          onPress={onMarkAbsent}
+          activeOpacity={0.7}
+        >
+          <Text style={[styles.actionText, status === 'ABSENT' && styles.absentTextActive]}>A</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -64,30 +86,55 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
     backgroundColor: colors.surface,
-    // Reduced padding for a slimmer row
-    paddingVertical: 10, 
+    paddingVertical: 12,
     paddingHorizontal: spacing.m,
     borderRadius: spacing.borderRadius,
-    // Decreased margin between rows to pack them closer
-    marginBottom: spacing.xs, 
+    marginBottom: spacing.xs,
     borderWidth: 1,
     borderColor: colors.border,
   },
-  infoSection: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
+
+  // Avatar
+  avatarWrapper: {
+    position: 'relative',
+    marginRight: spacing.m,
   },
   avatar: {
-    width: 36, // Slightly smaller avatar to match tighter row
-    height: 36,
-    borderRadius: 18,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     backgroundColor: colors.surfaceLight,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: spacing.m,
+    borderWidth: 2,
+    borderColor: colors.border,
+  },
+  roleBadge: {
+    position: 'absolute',
+    bottom: -4,
+    left: '50%',
+    transform: [{ translateX: -14 }],
+    backgroundColor: colors.surfaceLight,
+    borderRadius: 4,
+    paddingHorizontal: 4,
+    paddingVertical: 1,
+    borderWidth: 1,
+    borderColor: colors.border,
+    minWidth: 28,
+    alignItems: 'center',
+  },
+  roleBadgeText: {
+    color: colors.text.secondary,
+    fontSize: 9,
+    fontWeight: 'bold',
+    letterSpacing: 0.3,
+  },
+
+  // Info
+  infoSection: {
+    flex: 1,
+    justifyContent: 'center',
   },
   name: {
     color: colors.text.primary,
@@ -95,32 +142,34 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     marginBottom: 2,
   },
-  role: {
-    color: colors.text.secondary,
+  subLabel: {
     fontSize: 12,
+    fontWeight: '500',
   },
+
+  // Actions
   actionSection: {
     flexDirection: 'row',
-    gap: spacing.s,
+    gap: 6,
   },
   actionButton: {
-    width: 32, // Scaled down slightly for the compact design
-    height: 32,
+    width: 34,
+    height: 34,
     borderRadius: 8,
     backgroundColor: colors.surfaceLight,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: 'transparent',
   },
   actionText: {
     color: colors.text.secondary,
     fontSize: 14,
     fontWeight: 'bold',
   },
+
   // Active States
   presentActive: {
     backgroundColor: colors.status.successBg,
+    borderWidth: 1,
     borderColor: colors.status.success,
   },
   presentTextActive: {
@@ -128,6 +177,7 @@ const styles = StyleSheet.create({
   },
   absentActive: {
     backgroundColor: colors.status.errorBg,
+    borderWidth: 1,
     borderColor: colors.status.error,
   },
   absentTextActive: {

@@ -22,6 +22,7 @@ const ALL_SESSIONS: Session[] = [
     time: 'NOW',
     image: 'https://images.unsplash.com/photo-1531415074968-036ba1b575da?q=80&w=2067',
     status: 'LIVE',
+    batch: 'Under-16 Elite Batch',
   },
   {
     id: '2',
@@ -30,6 +31,7 @@ const ALL_SESSIONS: Session[] = [
     time: '10:00 AM',
     image: 'https://images.unsplash.com/photo-1624526267942-ab0ff8a3e972?q=80&w=2067',
     status: 'UPCOMING',
+    batch: 'Under-19 Elite Batch',
   },
   {
     id: '3',
@@ -38,6 +40,7 @@ const ALL_SESSIONS: Session[] = [
     time: 'Yesterday',
     image: 'https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?q=80&w=2067',
     status: 'COMPLETED',
+    batch: 'Under-19 Elite Batch',
   },
   {
     id: '4',
@@ -46,6 +49,7 @@ const ALL_SESSIONS: Session[] = [
     time: 'Last Week',
     image: 'https://images.unsplash.com/photo-1531415074968-036ba1b575da?q=80&w=2067',
     status: 'COMPLETED',
+    batch: 'Under-16 Elite Batch',
   },
 ];
 

@@ -11,6 +11,8 @@ export const colors = {
     accent: '#24FF78',
     light: '#FFFFFF',
     muted: '#888',
+    onImage: 'rgba(255,255,255,0.7)',      // text over dark image overlays
+    onImageSubtle: 'rgba(255,255,255,0.65)', // secondary text over dark image overlays
   },
 
   status: {
@@ -20,6 +22,9 @@ export const colors = {
     errorBg: 'rgba(239, 83, 80, 0.1)',
   },
 
+  overlay: 'rgba(0, 0, 0, 0.62)',
+
   border: 'rgba(255, 255, 255, 0.1)',
+  borderOnImage: 'rgba(255, 255, 255, 0.15)',
   icon: '#FFFFFF',
 };

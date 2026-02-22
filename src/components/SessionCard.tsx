@@ -1,6 +1,6 @@
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, DimensionValue } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, DimensionValue, ViewStyle, Image } from 'react-native';
 
 import { colors } from '@/constants/colors';
 import { spacing } from '@/constants/spacing';
@@ -11,38 +11,88 @@ interface SessionCardProps {
   onPress?: () => void;
   width?: DimensionValue;
   height?: DimensionValue;
+  style?: ViewStyle;
 }
 
-export const SessionCard = ({ session, onPress, width, height = 180 }: SessionCardProps) => {
+const STATUS_LABEL: Record<string, string> = {
+  LIVE: 'LIVE',
+  ONGOING: 'ONGOING',
+  UPCOMING: 'UPCOMING',
+  COMPLETED: 'COMPLETED',
+};
+
+export const SessionCard = ({ session, onPress, width, height = 170, style }: SessionCardProps) => {
+  const isLive = session.status === 'LIVE';
+  const isOngoing = session.status === 'ONGOING';
+  const isActive = isLive || isOngoing;
+  const hasImage = !!session.image;
+
   return (
     <TouchableOpacity
       activeOpacity={0.9}
       onPress={onPress}
-      // Apply the height prop here
-      style={[styles.cardContainer, { width: width || '100%', height }]}>
-      <Image source={{ uri: session.image }} style={styles.image} resizeMode="cover" />
-      <View style={styles.overlay} />
-
-      <View style={styles.content}>
-        <View style={[styles.badge, session.status === 'LIVE' && styles.liveBadge]}>
-          <Text style={styles.badgeText}>
-            {session.status === 'LIVE' ? '● LIVE' : session.status}
-          </Text>
+      style={[
+        styles.cardContainer,
+        hasImage ? { width: width || '100%', height } : { width: width || '100%' },
+        style,
+      ]}
+    >
+      {hasImage ? (
+        <Image source={{ uri: session.image }} style={styles.image} resizeMode="cover" />
+      ) : null}
+      {hasImage && <View style={styles.overlay} />}
+      <View style={[styles.content, !hasImage && styles.contentNoImage]}>
+        <View style={styles.topRow}>
+          <View style={[styles.badge, isActive && styles.activeBadge]}>
+            {isLive && <Text style={styles.liveDot}>● </Text>}
+            <Text style={[styles.badgeText, isActive && styles.activeBadgeText]}>
+              {STATUS_LABEL[session.status] ?? session.status}
+            </Text>
+          </View>
+          <View style={[styles.iconBox, hasImage && styles.iconBoxOnImage]}>
+            <MaterialCommunityIcons name="cricket" size={20} color={colors.primary} />
+          </View>
         </View>
 
-        <View style={styles.footer}>
-          <View style={styles.infoContainer}>
-            <Text style={styles.title} numberOfLines={1}>
-              {session.title}
+        {/* Session Title & Batch */}
+        <View>
+          <Text style={[styles.title, hasImage && styles.titleOnImage]} numberOfLines={1}>
+            {session.title}
+          </Text>
+          {session.batch ? (
+            <Text style={[styles.batch, hasImage && styles.batchOnImage]} numberOfLines={1}>
+              {session.batch}
             </Text>
-            <View style={styles.row}>
-              <Ionicons name="location-sharp" size={14} color={colors.text.secondary} />
-              <Text style={styles.location} numberOfLines={1}>
-                {session.location}
+          ) : null}
+
+          {/* Divider */}
+          <View style={[styles.divider, !hasImage && styles.dividerNoImage]} />
+
+          {/* Meta: Time + Location */}
+          <View style={styles.metaRow}>
+            <View style={styles.metaItem}>
+              <Ionicons
+                name="time-outline"
+                size={13}
+                color={hasImage ? colors.text.onImage : colors.primary}
+              />
+              <Text style={[styles.metaText, hasImage && styles.metaTextOnImage]}>
+                {session.time}
               </Text>
             </View>
+            {session.location ? (
+              <View style={styles.metaItem}>
+                <Ionicons
+                  name="location-outline"
+                  size={13}
+                  color={hasImage ? colors.text.onImage : colors.primary}
+                />
+                <Text style={[styles.metaText, hasImage && styles.metaTextOnImage]} numberOfLines={1}>
+                  {session.location}
+                </Text>
+              </View>
+            ) : null}
           </View>
-          <Text style={styles.time}>{session.time}</Text>
         </View>
       </View>
     </TouchableOpacity>
@@ -51,7 +101,6 @@ export const SessionCard = ({ session, onPress, width, height = 180 }: SessionCa
 
 const styles = StyleSheet.create({
   cardContainer: {
-    // Height is now handled via style prop in component
     borderRadius: spacing.borderRadius,
     overflow: 'hidden',
     backgroundColor: colors.surface,
@@ -65,55 +114,103 @@ const styles = StyleSheet.create({
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: colors.overlay,
   },
   content: {
     flex: 1,
-    padding: spacing.l,
+    padding: spacing.m,
     justifyContent: 'space-between',
   },
-  badge: {
-    alignSelf: 'flex-start',
-    backgroundColor: colors.primary,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 20,
+  contentNoImage: {
+    flex: undefined,
   },
-  liveBadge: {
-    backgroundColor: '#FF3B30',
-  },
-  badgeText: {
-    color: '#000',
-    fontWeight: 'bold',
-    fontSize: 12,
-  },
-  footer: {
+  topRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'flex-end',
+    alignItems: 'center',
   },
-  infoContainer: {
-    flex: 1,
-    marginRight: spacing.m,
+  badge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.surfaceLight,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  activeBadge: {
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
+  },
+  liveDot: {
+    color: colors.text.light,
+    fontSize: 10,
+    fontWeight: 'bold',
+  },
+  badgeText: {
+    color: colors.text.secondary,
+    fontSize: 11,
+    fontWeight: 'bold',
+    letterSpacing: 0.5,
+  },
+  activeBadgeText: {
+    color: colors.background,
+  },
+  iconBox: {
+    width: 36,
+    height: 36,
+    borderRadius: 8,
+    backgroundColor: colors.surfaceLight,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  iconBoxOnImage: {
+    backgroundColor: colors.surfaceLight,
+    borderColor: colors.borderOnImage,
   },
   title: {
     color: colors.text.primary,
     fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 4,
+    marginBottom: 3,
   },
-  row: {
+  titleOnImage: {
+    color: colors.text.light,
+  },
+  batch: {
+    color: colors.text.secondary,
+    fontSize: 14,
+    marginBottom: spacing.xs,
+  },
+  batchOnImage: {
+    color: colors.text.onImageSubtle,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: colors.borderOnImage,
+    marginBottom: spacing.xs,
+  },
+  dividerNoImage: {
+    backgroundColor: colors.border,
+  },
+  metaRow: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
   },
-  location: {
+  metaItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+  },
+  metaText: {
     color: colors.text.secondary,
-    marginLeft: 4,
     fontSize: 14,
   },
-  time: {
-    color: colors.text.primary,
-    fontSize: 16,
-    fontWeight: 'bold',
+  metaTextOnImage: {
+    color: colors.text.onImage,
   },
 });

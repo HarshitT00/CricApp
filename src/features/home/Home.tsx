@@ -30,6 +30,7 @@ const MOCK_SESSIONS: Session[] = [
     time: '07:00 AM',
     image: 'https://images.unsplash.com/photo-1531415074968-036ba1b575da?q=80&w=2067',
     status: 'UPCOMING',
+    batch: 'Under-16 Elite Batch',
   },
   {
     id: '2',
@@ -38,6 +39,7 @@ const MOCK_SESSIONS: Session[] = [
     time: '09:30 AM',
     image: 'https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?q=80&w=2067',
     status: 'UPCOMING',
+    batch: 'Under-19 Elite Batch',
   },
   {
     id: '3',
@@ -46,6 +48,7 @@ const MOCK_SESSIONS: Session[] = [
     time: '02:00 PM',
     image: 'https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?q=80&w=2067',
     status: 'UPCOMING',
+    batch: 'Under-19 Elite Batch',
   },
 ];
 
