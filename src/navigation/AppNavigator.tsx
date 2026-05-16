@@ -10,6 +10,7 @@ import { colors } from '@/constants/colors';
 import { MarkAttendance } from '@/features/attendance/MarkAttendance';
 import { Home } from '@/features/home/Home';
 import { PlayersList } from '@/features/players/PlayersList';
+import { RegisterPlayer } from '@/features/players/RegisterPlayer';
 import { CreateSession } from '@/features/sessions/CreateSession';
 import { SessionList } from '@/features/sessions/SessionList';
 import { RootStackParamList } from '@/navigation/types';
@@ -161,6 +162,12 @@ export function AppNavigator() {
             headerShown: false,
             title: 'Mark Attendance',
           }}
+        />
+
+        <Stack.Screen
+          name="RegisterPlayer"
+          component={RegisterPlayer}
+          options={{ headerShown: false }}
         />
       </Stack.Navigator>
     </NavigationContainer>
