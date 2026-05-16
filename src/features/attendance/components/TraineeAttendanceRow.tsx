@@ -17,8 +17,8 @@ interface TraineeAttendanceRowProps {
 
 // Role abbreviation map
 const ROLE_ABBR: Record<string, string> = {
-  'Batsman': 'BAT',
-  'Bowler': 'BWL',
+  Batsman: 'BAT',
+  Bowler: 'BWL',
   'All Rounder': 'ALL',
   'Wicket Keeper': 'WK',
 };
@@ -29,14 +29,14 @@ export const TraineeAttendanceRow: React.FC<TraineeAttendanceRowProps> = ({
   onMarkPresent,
   onMarkAbsent,
 }) => {
-  const statusLabel =
-    status === 'PRESENT' ? 'Present' :
-    status === 'ABSENT' ? 'Absent' : null;
+  const statusLabel = status === 'PRESENT' ? 'Present' : status === 'ABSENT' ? 'Absent' : null;
 
   const statusColor =
-    status === 'PRESENT' ? colors.status.success :
-    status === 'ABSENT' ? colors.status.error :
-    colors.text.secondary;
+    status === 'PRESENT'
+      ? colors.status.success
+      : status === 'ABSENT'
+        ? colors.status.error
+        : colors.text.secondary;
 
   const roleAbbr = ROLE_ABBR[trainee.role] ?? trainee.role.slice(0, 3).toUpperCase();
 
@@ -55,9 +55,7 @@ export const TraineeAttendanceRow: React.FC<TraineeAttendanceRowProps> = ({
       {/* Name & Status */}
       <View style={styles.infoSection}>
         <Text style={styles.name}>{trainee.name}</Text>
-        <Text style={[styles.subLabel, { color: statusColor }]}>
-          {statusLabel ?? trainee.role}
-        </Text>
+        <Text style={[styles.subLabel, { color: statusColor }]}>{statusLabel ?? trainee.role}</Text>
       </View>
 
       {/* P / A / L Buttons */}
@@ -65,16 +63,16 @@ export const TraineeAttendanceRow: React.FC<TraineeAttendanceRowProps> = ({
         <TouchableOpacity
           style={[styles.actionButton, status === 'PRESENT' && styles.presentActive]}
           onPress={onMarkPresent}
-          activeOpacity={0.7}
-        >
-          <Text style={[styles.actionText, status === 'PRESENT' && styles.presentTextActive]}>P</Text>
+          activeOpacity={0.7}>
+          <Text style={[styles.actionText, status === 'PRESENT' && styles.presentTextActive]}>
+            P
+          </Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={[styles.actionButton, status === 'ABSENT' && styles.absentActive]}
           onPress={onMarkAbsent}
-          activeOpacity={0.7}
-        >
+          activeOpacity={0.7}>
           <Text style={[styles.actionText, status === 'ABSENT' && styles.absentTextActive]}>A</Text>
         </TouchableOpacity>
       </View>

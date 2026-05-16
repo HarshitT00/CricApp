@@ -34,19 +34,22 @@ export const CreateSessionForm: React.FC<CreateSessionFormProps> = ({ onSubmit }
   const [endTime, setEndTime] = useState('');
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
-  
+
   // Starting with the mock batch from your design
   const [selectedBatches, setSelectedBatches] = useState<Batch[]>([
-    { id: '1', name: 'U-19 Pro Batting'}, { id: '2', name: 'U-19 Pro Bowling' }, { id: '3', name: 'U-17 Bowling' }
+    { id: '1', name: 'U-19 Pro Batting' },
+    { id: '2', name: 'U-19 Pro Bowling' },
+    { id: '3', name: 'U-17 Bowling' },
   ]);
 
   const searchResults = useMemo(() => {
     if (!searchQuery.trim()) return [];
-    
-    return DUMMY_BATCHES.filter(batch => 
-      batch.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
-      // Prevent showing batches that are already selected
-      !selectedBatches.find(selected => selected.id === batch.id)
+
+    return DUMMY_BATCHES.filter(
+      batch =>
+        batch.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
+        // Prevent showing batches that are already selected
+        !selectedBatches.find(selected => selected.id === batch.id),
     );
   }, [searchQuery, selectedBatches]);
 
@@ -99,14 +102,14 @@ export const CreateSessionForm: React.FC<CreateSessionFormProps> = ({ onSubmit }
         startDate={startDate}
         onChangeStartDate={setStartDate}
         endDate={endDate}
-        onChangeEndDate={setEndDate} 
+        onChangeEndDate={setEndDate}
         startTime={startTime}
         onChangeStartTime={setStartTime}
         endTime={endTime}
-        onChangeEndTime={setEndTime} 
+        onChangeEndTime={setEndTime}
         selectedDays={selectedDays}
         onToggleDay={handleToggleDay}
-    />
+      />
 
       {/* 3. Trainees */}
       <CreateSessionTraineesSection

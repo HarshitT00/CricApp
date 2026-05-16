@@ -1,6 +1,14 @@
-import React, { useState, useMemo } from 'react';
-import { Modal, View, Text, TouchableOpacity, StyleSheet, TouchableWithoutFeedback } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import React, { useState, useMemo } from 'react';
+import {
+  Modal,
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  TouchableWithoutFeedback,
+} from 'react-native';
+
 import { colors } from '@/constants/colors';
 import { spacing } from '@/constants/spacing';
 
@@ -28,7 +36,7 @@ export const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
     const month = baseDate.getMonth();
     const daysInMonth = getDaysInMonth(year, month);
     const firstDay = getFirstDayOfMonth(year, month);
-    
+
     let daysArray = Array(firstDay).fill(null); // Empty slots for alignment
     for (let i = 1; i <= daysInMonth; i++) {
       daysArray.push(i);
@@ -71,24 +79,24 @@ export const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
               {/* Weekdays */}
               <View style={styles.weekRow}>
                 {WEEKDAYS.map((day, idx) => (
-                  <Text key={idx} style={styles.weekdayText}>{day}</Text>
+                  <Text key={idx} style={styles.weekdayText}>
+                    {day}
+                  </Text>
                 ))}
               </View>
 
               {/* Days Grid */}
               <View style={styles.daysGrid}>
                 {days.map((day, index) => (
-                  <TouchableOpacity 
-                    key={index} 
+                  <TouchableOpacity
+                    key={index}
                     style={[styles.dayCell, !day && styles.emptyCell]}
                     onPress={() => day && handleDayPress(day)}
-                    disabled={!day}
-                  >
+                    disabled={!day}>
                     {day && <Text style={styles.dayText}>{day}</Text>}
                   </TouchableOpacity>
                 ))}
               </View>
-
             </View>
           </TouchableWithoutFeedback>
         </View>

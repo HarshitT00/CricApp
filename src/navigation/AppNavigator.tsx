@@ -1,26 +1,33 @@
 import 'react-native-gesture-handler';
+import { Ionicons } from '@expo/vector-icons';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import React from 'react';
 import { View, Text } from 'react-native';
 
-import { Ionicons } from '@expo/vector-icons';
-
 import { colors } from '@/constants/colors';
+import { MarkAttendance } from '@/features/attendance/MarkAttendance';
 import { Home } from '@/features/home/Home';
+import { PlayersList } from '@/features/players/PlayersList';
 import { CreateSession } from '@/features/sessions/CreateSession';
 import { SessionList } from '@/features/sessions/SessionList';
-import { MarkAttendance } from '@/features/attendance/MarkAttendance';
 import { RootStackParamList } from '@/navigation/types';
-import { PlayersList } from '@/features/players/PlayersList';
 
 const Stack = createStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator();
 
 // --- Placeholders for screens you haven't imported yet ---
-const BatchesPlaceholder = () => <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}><Text>Batches Screen</Text></View>;
-const AccountPlaceholder = () => <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}><Text>Account Screen</Text></View>;
+const BatchesPlaceholder = () => (
+  <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+    <Text>Batches Screen</Text>
+  </View>
+);
+const AccountPlaceholder = () => (
+  <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+    <Text>Account Screen</Text>
+  </View>
+);
 // ---------------------------------------------------------
 
 const CustomTheme = {
@@ -47,7 +54,6 @@ const transitionConfig = {
     restSpeedThreshold: 0.01,
   },
 };
-
 
 function MainTabs() {
   return (
@@ -130,7 +136,6 @@ export function AppNavigator() {
           gestureEnabled: true,
           gestureDirection: 'horizontal',
         }}>
-        
         {/* MainTabs holds the Footer */}
         <Stack.Screen
           name="MainTabs"

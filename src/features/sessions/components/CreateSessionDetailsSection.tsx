@@ -1,9 +1,9 @@
 import React from 'react';
 import { View, Text, TextInput, StyleSheet } from 'react-native';
 
+import { SelectorInput } from '@/components/SelectorInput';
 import { colors } from '@/constants/colors';
 import { spacing } from '@/constants/spacing';
-import { SelectorInput } from '@/components/SelectorInput';
 
 interface CreateSessionDetailsSectionProps {
   name: string;
@@ -31,13 +31,13 @@ export const CreateSessionDetailsSection: React.FC<CreateSessionDetailsSectionPr
           onChangeText={onChangeName}
         />
       </View>
-        <SelectorInput 
-            label="Facility" 
-            value={facility} 
-            placeholder="Select Facility" 
-            icon="location-outline" // or "chevron-forward"
-            onPress={() => console.log('Open facility picker')} 
-        />
+      <SelectorInput
+        label="Facility"
+        value={facility}
+        placeholder="Select Facility"
+        icon="location-outline"
+        onPress={() => console.log('Open facility picker')}
+      />
     </View>
   );
 };

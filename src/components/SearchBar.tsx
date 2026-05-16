@@ -1,6 +1,15 @@
-import React from 'react';
-import { View, TextInput, StyleSheet, TextInputProps, TouchableOpacity, Text, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import React from 'react';
+import {
+  View,
+  TextInput,
+  StyleSheet,
+  TextInputProps,
+  TouchableOpacity,
+  Text,
+  ScrollView,
+} from 'react-native';
+
 import { colors } from '@/constants/colors';
 import { spacing } from '@/constants/spacing';
 
@@ -17,13 +26,13 @@ interface SearchBarProps extends TextInputProps {
   onSelectResult?: (result: SearchResult) => void;
 }
 
-export const SearchBar: React.FC<SearchBarProps> = ({ 
-  value, 
-  onChangeText, 
-  placeholder = "Search...", 
+export const SearchBar: React.FC<SearchBarProps> = ({
+  value,
+  onChangeText,
+  placeholder = 'Search...',
   results = [],
   onSelectResult,
-  ...props 
+  ...props
 }) => {
   const showResults = value.length > 0 && results.length > 0;
 
@@ -45,17 +54,15 @@ export const SearchBar: React.FC<SearchBarProps> = ({
       {/* Floating Dropdown Results */}
       {showResults && (
         <View style={styles.dropdownContainer}>
-          <ScrollView 
-            keyboardShouldPersistTaps="handled" 
+          <ScrollView
+            keyboardShouldPersistTaps="handled"
             style={styles.scrollView}
-            nestedScrollEnabled={true}
-          >
-            {results.map((result) => (
-              <TouchableOpacity 
-                key={result.id} 
+            nestedScrollEnabled={true}>
+            {results.map(result => (
+              <TouchableOpacity
+                key={result.id}
                 style={styles.searchResultItem}
-                onPress={() => onSelectResult && onSelectResult(result)}
-              >
+                onPress={() => onSelectResult && onSelectResult(result)}>
                 <Text style={styles.searchResultText}>{result.name}</Text>
               </TouchableOpacity>
             ))}
@@ -69,7 +76,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
 const styles = StyleSheet.create({
   wrapper: {
     // This makes the dropdown position itself relative to this container
-    position: 'relative', 
+    position: 'relative',
     zIndex: 1000, // Important for iOS to ensure dropdown stays on top
     marginBottom: spacing.m,
   },
@@ -99,7 +106,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border,
     maxHeight: 200, // Limits height and makes it scrollable if there are many results
-    zIndex: 1000, 
+    zIndex: 1000,
     elevation: 5, // Adds a shadow on Android
     shadowColor: '#000', // Adds a shadow on iOS
     shadowOffset: { width: 0, height: 4 },
@@ -118,5 +125,5 @@ const styles = StyleSheet.create({
   searchResultText: {
     color: colors.text.primary,
     fontSize: 14,
-  }
+  },
 });

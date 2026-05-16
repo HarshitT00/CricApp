@@ -3,16 +3,15 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useLayoutEffect, useMemo, useState } from 'react';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 
+import { CreateSessionFab } from '@/components/AddButton';
 import { ScreenHeader } from '@/components/ScreenHeader';
 import { ScreenWrapper } from '@/components/ScreenWrapper';
 import { SessionCard } from '@/components/SessionCard';
 import { colors } from '@/constants/colors';
 import { spacing } from '@/constants/spacing';
+import { SessionTabOption, SessionTabs } from '@/features/sessions/components/SessionTabs';
 import { RootStackParamList } from '@/navigation/types';
 import { Session } from '@/types/Session';
-
-import { CreateSessionFab } from '@/components/AddButton';
-import { SessionTabOption, SessionTabs } from '@/features/sessions/components/SessionTabs';
 
 const ALL_SESSIONS: Session[] = [
   {

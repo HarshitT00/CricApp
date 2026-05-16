@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import { CustomToggle } from '@/components/CustomToggle';
-import { colors } from '@/constants/colors';
-import { spacing } from '@/constants/spacing';
-import { SelectorInput } from '@/components/SelectorInput';
 import { CustomDatePicker } from '@/components/CustomDatePicker';
 import { CustomTimePicker } from '@/components/CustomTimePicker';
+import { CustomToggle } from '@/components/CustomToggle';
+import { SelectorInput } from '@/components/SelectorInput';
+import { colors } from '@/constants/colors';
+import { spacing } from '@/constants/spacing';
 
 const WEEKDAYS = [
   { label: 'S', value: 'Sun' },

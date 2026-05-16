@@ -1,24 +1,59 @@
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 
-import { ScreenWrapper } from '@/components/ScreenWrapper';
 import { ScreenHeader } from '@/components/ScreenHeader';
+import { ScreenWrapper } from '@/components/ScreenWrapper';
 import { SessionCard } from '@/components/SessionCard';
-import { TraineeAttendanceRow } from '@/features/attendance/components/TraineeAttendanceRow';
 import { colors } from '@/constants/colors';
 import { spacing } from '@/constants/spacing';
+import { TraineeAttendanceRow } from '@/features/attendance/components/TraineeAttendanceRow';
 import { Player } from '@/types/Player';
 import { Session } from '@/types/Session';
 
 // --- MOCK DATA ---
 const MOCK_TRAINEES: Player[] = [
-  { id: '1', name: 'Rahul D.', role: 'Wicket Keeper', image: '', country: 'IN', stats: { matches: 0, runs: 0, wickets: 0 } },
-  { id: '2', name: 'Virat K.', role: 'Batsman', image: '', country: 'IN', stats: { matches: 0, runs: 0, wickets: 0 } },
-  { id: '3', name: 'Jasprit B.', role: 'Bowler', image: '', country: 'IN', stats: { matches: 0, runs: 0, wickets: 0 } },
-  { id: '4', name: 'Hardik P.', role: 'All Rounder', image: '', country: 'IN', stats: { matches: 0, runs: 0, wickets: 0 } },
-  { id: '5', name: 'Rohit S.', role: 'Batsman', image: '', country: 'IN', stats: { matches: 0, runs: 0, wickets: 0 } },
+  {
+    id: '1',
+    name: 'Rahul D.',
+    role: 'Wicket Keeper',
+    image: '',
+    country: 'IN',
+    stats: { matches: 0, runs: 0, wickets: 0 },
+  },
+  {
+    id: '2',
+    name: 'Virat K.',
+    role: 'Batsman',
+    image: '',
+    country: 'IN',
+    stats: { matches: 0, runs: 0, wickets: 0 },
+  },
+  {
+    id: '3',
+    name: 'Jasprit B.',
+    role: 'Bowler',
+    image: '',
+    country: 'IN',
+    stats: { matches: 0, runs: 0, wickets: 0 },
+  },
+  {
+    id: '4',
+    name: 'Hardik P.',
+    role: 'All Rounder',
+    image: '',
+    country: 'IN',
+    stats: { matches: 0, runs: 0, wickets: 0 },
+  },
+  {
+    id: '5',
+    name: 'Rohit S.',
+    role: 'Batsman',
+    image: '',
+    country: 'IN',
+    stats: { matches: 0, runs: 0, wickets: 0 },
+  },
 ];
 
 const MOCK_SESSION: Session = {
@@ -66,13 +101,15 @@ export const MarkAttendance = () => {
         <View style={styles.studentsHeader}>
           <Text style={styles.studentsTitle}>Students ({MOCK_TRAINEES.length})</Text>
           <View style={styles.markedPill}>
-            <Text style={styles.markedPillText}>{markedCount}/{MOCK_TRAINEES.length} Marked</Text>
+            <Text style={styles.markedPillText}>
+              {markedCount}/{MOCK_TRAINEES.length} Marked
+            </Text>
           </View>
         </View>
 
         <FlatList
           data={MOCK_TRAINEES}
-          keyExtractor={(item) => item.id}
+          keyExtractor={item => item.id}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.listContent}
           renderItem={({ item }) => (
@@ -92,11 +129,12 @@ export const MarkAttendance = () => {
             console.log('Saved Attendance Data:', attendanceState);
             navigation.goBack();
           }}
-          activeOpacity={0.8}
-        >
+          activeOpacity={0.8}>
           <Text style={styles.submitButtonText}>Submit Attendance</Text>
           <View style={styles.submitCountBadge}>
-            <Text style={styles.submitCountText}>{markedCount}/{MOCK_TRAINEES.length}</Text>
+            <Text style={styles.submitCountText}>
+              {markedCount}/{MOCK_TRAINEES.length}
+            </Text>
           </View>
         </TouchableOpacity>
       </View>

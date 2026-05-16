@@ -1,6 +1,7 @@
+import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+
 import { colors } from '@/constants/colors';
 import { spacing } from '@/constants/spacing';
 
@@ -22,11 +23,7 @@ export const SelectorInput: React.FC<SelectorInputProps> = ({
   return (
     <View style={styles.fieldContainer}>
       <Text style={styles.label}>{label}</Text>
-      <TouchableOpacity 
-        style={styles.inputWithIcon} 
-        onPress={onPress}
-        activeOpacity={0.7}
-      >
+      <TouchableOpacity style={styles.inputWithIcon} onPress={onPress} activeOpacity={0.7}>
         <Text style={[styles.inputValue, !value && styles.placeholderText]}>
           {value || placeholder}
         </Text>

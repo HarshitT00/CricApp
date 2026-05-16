@@ -1,6 +1,14 @@
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, DimensionValue, ViewStyle, Image } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  DimensionValue,
+  ViewStyle,
+  Image,
+} from 'react-native';
 
 import { colors } from '@/constants/colors';
 import { spacing } from '@/constants/spacing';
@@ -35,8 +43,7 @@ export const SessionCard = ({ session, onPress, width, height = 170, style }: Se
         styles.cardContainer,
         hasImage ? { width: width || '100%', height } : { width: width || '100%' },
         style,
-      ]}
-    >
+      ]}>
       {hasImage ? (
         <Image source={{ uri: session.image }} style={styles.image} resizeMode="cover" />
       ) : null}
@@ -87,7 +94,9 @@ export const SessionCard = ({ session, onPress, width, height = 170, style }: Se
                   size={13}
                   color={hasImage ? colors.text.onImage : colors.primary}
                 />
-                <Text style={[styles.metaText, hasImage && styles.metaTextOnImage]} numberOfLines={1}>
+                <Text
+                  style={[styles.metaText, hasImage && styles.metaTextOnImage]}
+                  numberOfLines={1}>
                   {session.location}
                 </Text>
               </View>

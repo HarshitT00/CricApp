@@ -1,9 +1,10 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { colors } from '@/constants/colors';
-import { spacing } from '@/constants/spacing';
+
 import { Chip } from '@/components/Chip';
 import { SearchBar, SearchResult } from '@/components/SearchBar'; // Ensure SearchResult is exported from SearchBar
+import { colors } from '@/constants/colors';
+import { spacing } from '@/constants/spacing';
 
 interface CreateSessionTraineesSectionProps {
   searchQuery: string;
@@ -30,7 +31,7 @@ export const CreateSessionTraineesSection: React.FC<CreateSessionTraineesSection
         <Text style={styles.label}>Assign Batches</Text>
 
         {/* The SearchBar now handles the dropdown automatically! */}
-        <SearchBar 
+        <SearchBar
           value={searchQuery}
           onChangeText={onChangeSearch}
           placeholder="Search trainees or batches..."
@@ -41,12 +42,8 @@ export const CreateSessionTraineesSection: React.FC<CreateSessionTraineesSection
         {/* Selected Batches Chips */}
         {selectedBatches.length > 0 && (
           <View style={styles.chipsContainer}>
-            {selectedBatches.map((batch) => (
-              <Chip 
-                key={batch.id} 
-                label={batch.name} 
-                onClose={() => onRemoveBatch(batch.id)} 
-              />
+            {selectedBatches.map(batch => (
+              <Chip key={batch.id} label={batch.name} onClose={() => onRemoveBatch(batch.id)} />
             ))}
           </View>
         )}
@@ -69,7 +66,7 @@ const styles = StyleSheet.create({
   },
   fieldContainer: {
     marginBottom: spacing.l,
-    zIndex: 1000, 
+    zIndex: 1000,
   },
   label: {
     fontSize: 14,

@@ -7,6 +7,7 @@ import {
   StyleSheet,
   TouchableWithoutFeedback,
 } from 'react-native';
+
 import { colors } from '@/constants/colors';
 import { spacing } from '@/constants/spacing';
 
