@@ -65,7 +65,7 @@ export function Home() {
         <SectionHeader
           title="Today's Sessions"
           action="View All"
-          onPress={() => navigation.navigate('SessionList')}
+          onPress={() => navigation.navigate('MainTabs', { screen: 'Sessions' })}
         />
         <FlatList
           data={MOCK_SESSIONS}

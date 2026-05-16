@@ -5,7 +5,6 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import React from 'react';
 import { View, Text } from 'react-native';
 
-// IMPORT EXPO ICONS
 import { Ionicons } from '@expo/vector-icons';
 
 import { colors } from '@/constants/colors';
@@ -14,13 +13,13 @@ import { CreateSession } from '@/features/sessions/CreateSession';
 import { SessionList } from '@/features/sessions/SessionList';
 import { MarkAttendance } from '@/features/attendance/MarkAttendance';
 import { RootStackParamList } from '@/navigation/types';
+import { PlayersList } from '@/features/players/PlayersList';
 
 const Stack = createStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator();
 
 // --- Placeholders for screens you haven't imported yet ---
 const BatchesPlaceholder = () => <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}><Text>Batches Screen</Text></View>;
-const PlayersPlaceholder = () => <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}><Text>Players Screen</Text></View>;
 const AccountPlaceholder = () => <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}><Text>Account Screen</Text></View>;
 // ---------------------------------------------------------
 
@@ -93,7 +92,7 @@ function MainTabs() {
       <Tab.Screen name="Home" component={Home} />
       <Tab.Screen name="Sessions" component={SessionList} />
       <Tab.Screen name="Batches" component={BatchesPlaceholder} />
-      <Tab.Screen name="Players" component={PlayersPlaceholder} />
+      <Tab.Screen name="Players" component={PlayersList} />
       <Tab.Screen name="Account" component={AccountPlaceholder} />
     </Tab.Navigator>
   );

@@ -1,7 +1,7 @@
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import React, { useState, useMemo, useLayoutEffect } from 'react';
-import { View, FlatList, StyleSheet, Text } from 'react-native';
+import React, { useLayoutEffect, useMemo, useState } from 'react';
+import { FlatList, StyleSheet, Text, View } from 'react-native';
 
 import { ScreenHeader } from '@/components/ScreenHeader';
 import { ScreenWrapper } from '@/components/ScreenWrapper';
@@ -11,8 +11,8 @@ import { spacing } from '@/constants/spacing';
 import { RootStackParamList } from '@/navigation/types';
 import { Session } from '@/types/Session';
 
-import { CreateSessionFab } from './components/CreateSessionFab';
-import { SessionTabs, SessionTabOption } from './components/SessionTabs';
+import { CreateSessionFab } from '@/components/AddButton';
+import { SessionTabOption, SessionTabs } from '@/features/sessions/components/SessionTabs';
 
 const ALL_SESSIONS: Session[] = [
   {
