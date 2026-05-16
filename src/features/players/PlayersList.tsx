@@ -18,48 +18,48 @@ const MOCK_PLAYERS: PlayerInfo[] = [
     name: 'Virat Kohli',
     role: 'Batsman',
     image: 'https://i.pravatar.cc/150?img=11',
-    age: "18",
-    contactNumber: "1234567890",
+    age: '18',
+    contactNumber: '1234567890',
     guardianInfo: {
-      name: "John Doe",
-      contactNumber: "9876543210"
-    }
+      name: 'John Doe',
+      contactNumber: '9876543210',
+    },
   },
   {
     id: '2',
     name: 'Jasprit Bumrah',
     role: 'Bowler',
     image: 'https://i.pravatar.cc/150?img=12',
-    age: "18",
-    contactNumber: "1234567890",
+    age: '18',
+    contactNumber: '1234567890',
     guardianInfo: {
-      name: "John Doe",
-      contactNumber: "9876543210"
-    }
+      name: 'John Doe',
+      contactNumber: '9876543210',
+    },
   },
   {
     id: '3',
     name: 'Hardik Pandya',
     role: 'All Rounder',
     image: 'https://i.pravatar.cc/150?img=13',
-    age: "18",
-    contactNumber: "1234567890",
+    age: '18',
+    contactNumber: '1234567890',
     guardianInfo: {
-      name: "John Doe",
-      contactNumber: "9876543210"
-    }
+      name: 'John Doe',
+      contactNumber: '9876543210',
+    },
   },
   {
     id: '4',
     name: 'MS Dhoni',
     role: 'Wicket Keeper',
     image: 'https://i.pravatar.cc/150?img=14',
-    age: "18",
-    contactNumber: "1234567890",
+    age: '18',
+    contactNumber: '1234567890',
     guardianInfo: {
-      name: "John Doe",
-      contactNumber: "9876543210"
-    }
+      name: 'John Doe',
+      contactNumber: '9876543210',
+    },
   },
 ];
 
@@ -73,7 +73,6 @@ export const PlayersList = () => {
   const handleEditPlayer = (playerInfo: PlayerInfo) => {
     navigation.navigate('RegisterPlayer', { playerInfo });
   };
-
 
   return (
     <ScreenWrapper>
