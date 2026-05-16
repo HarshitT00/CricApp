@@ -29,7 +29,8 @@
         {
           "userInterfaceStyle": "light"
         }
-      ]
+      ],
+      "expo-web-browser"
     ]
   }
 }

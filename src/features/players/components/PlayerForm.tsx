@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
+import * as ImagePicker from 'expo-image-picker'; // ADDED: Image Picker
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, Alert } from 'react-native';
 
 import { CustomInput } from '@/components/CustomInput';
 import { colors } from '@/constants/colors';
@@ -27,8 +28,25 @@ export const PlayerForm = ({ initialData, onSubmit, isSubmitting }: PlayerFormPr
     },
   });
 
-  const handleImagePick = () => {
-    console.log('Open Camera/Gallery');
+  // UPDATED: Open device camera and set image
+  const handleImagePick = async () => {
+    const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
+
+    if (!permissionResult.granted) {
+      Alert.alert('Permission Required', 'Please allow camera access to take a player photo.');
+      return;
+    }
+
+    const result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1], // Force a square crop for the face
+      quality: 0.8, // Slightly compress to save memory
+    });
+
+    if (!result.canceled) {
+      updateField('image', result.assets[0].uri);
+    }
   };
 
   const updateField = (key: keyof PlayerInfo, value: string) => {
@@ -108,7 +126,8 @@ export const PlayerForm = ({ initialData, onSubmit, isSubmitting }: PlayerFormPr
         label="Guardian Name"
         placeholder="Enter guardian's name"
         value={formData.guardianInfo.name}
-        onChangeText={text => updateField('name', text)}
+        // FIXED: This previously used updateField('name', text) which overwrote the player's name
+        onChangeText={text => updateGuardianField('name', text)}
       />
 
       <CustomInput
@@ -133,15 +152,10 @@ export const PlayerForm = ({ initialData, onSubmit, isSubmitting }: PlayerFormPr
   );
 };
 
+// ... keep existing styles ...
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingHorizontal: spacing.m,
-  },
-  imageSection: {
-    alignItems: 'center',
-    marginVertical: spacing.l,
-  },
+  container: { flex: 1, paddingHorizontal: spacing.m },
+  imageSection: { alignItems: 'center', marginVertical: spacing.l },
   imageCircle: {
     width: 120,
     height: 120,
@@ -153,20 +167,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     position: 'relative',
   },
-  profileImage: {
-    width: '100%',
-    height: '100%',
-    borderRadius: 60,
-  },
-  placeholderContainer: {
-    alignItems: 'center',
-  },
-  uploadText: {
-    color: colors.primary,
-    fontSize: 12,
-    fontWeight: '600',
-    marginTop: 4,
-  },
+  profileImage: { width: '100%', height: '100%', borderRadius: 60 },
+  placeholderContainer: { alignItems: 'center' },
+  uploadText: { color: colors.primary, fontSize: 12, fontWeight: '600', marginTop: 4 },
   editBadge: {
     position: 'absolute',
     bottom: 0,
@@ -187,22 +190,10 @@ const styles = StyleSheet.create({
     marginBottom: spacing.m,
     marginTop: spacing.s,
   },
-  row: {
-    flexDirection: 'row',
-  },
-  halfWidthLeft: {
-    flex: 1,
-    marginRight: spacing.s,
-  },
-  halfWidthRight: {
-    flex: 1.5,
-    marginLeft: spacing.s,
-  },
-  divider: {
-    height: 1,
-    backgroundColor: colors.border,
-    marginVertical: spacing.m,
-  },
+  row: { flexDirection: 'row' },
+  halfWidthLeft: { flex: 1, marginRight: spacing.s },
+  halfWidthRight: { flex: 1.5, marginLeft: spacing.s },
+  divider: { height: 1, backgroundColor: colors.border, marginVertical: spacing.m },
   submitButton: {
     backgroundColor: colors.primary,
     paddingVertical: 16,
@@ -210,12 +201,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: spacing.l,
   },
-  submitButtonText: {
-    color: colors.background,
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  bottomPadding: {
-    height: 40,
-  },
+  submitButtonText: { color: colors.background, fontSize: 16, fontWeight: 'bold' },
+  bottomPadding: { height: 40 },
 });
