@@ -1,16 +1,28 @@
 import 'react-native-gesture-handler';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import React from 'react';
+import { View, Text } from 'react-native';
+
+// IMPORT EXPO ICONS
+import { Ionicons } from '@expo/vector-icons';
 
 import { colors } from '@/constants/colors';
 import { Home } from '@/features/home/Home';
 import { CreateSession } from '@/features/sessions/CreateSession';
 import { SessionList } from '@/features/sessions/SessionList';
-import { RootStackParamList } from '@/navigation/types';
 import { MarkAttendance } from '@/features/attendance/MarkAttendance';
+import { RootStackParamList } from '@/navigation/types';
 
 const Stack = createStackNavigator<RootStackParamList>();
+const Tab = createBottomTabNavigator();
+
+// --- Placeholders for screens you haven't imported yet ---
+const BatchesPlaceholder = () => <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}><Text>Batches Screen</Text></View>;
+const PlayersPlaceholder = () => <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}><Text>Players Screen</Text></View>;
+const AccountPlaceholder = () => <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}><Text>Account Screen</Text></View>;
+// ---------------------------------------------------------
 
 const CustomTheme = {
   ...DefaultTheme,
@@ -37,6 +49,57 @@ const transitionConfig = {
   },
 };
 
+
+function MainTabs() {
+  return (
+    <Tab.Navigator
+      screenOptions={({ route }) => ({
+        headerShown: false,
+        tabBarLabelPosition: 'below-icon',
+        tabBarStyle: {
+          backgroundColor: colors.background,
+          borderTopColor: '#e0e0e0',
+          height: 75,
+          paddingTop: 8,
+          paddingBottom: 12,
+        },
+        tabBarIconStyle: {
+          marginBottom: 4,
+        },
+        tabBarLabelStyle: {
+          fontSize: 11,
+          fontWeight: '500',
+        },
+        tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: 'gray',
+        tabBarIcon: ({ focused, color }) => {
+          let iconName: keyof typeof Ionicons.glyphMap = 'home';
+
+          if (route.name === 'Home') {
+            iconName = focused ? 'home' : 'home-outline';
+          } else if (route.name === 'Sessions') {
+            iconName = focused ? 'calendar' : 'calendar-outline';
+          } else if (route.name === 'Batches') {
+            iconName = focused ? 'people' : 'people-outline';
+          } else if (route.name === 'Players') {
+            iconName = focused ? 'person' : 'person-outline';
+          } else if (route.name === 'Account') {
+            iconName = focused ? 'person-circle' : 'person-circle-outline';
+          }
+
+          return <Ionicons name={iconName} size={28} color={color} />;
+        },
+      })}>
+      <Tab.Screen name="Home" component={Home} />
+      <Tab.Screen name="Sessions" component={SessionList} />
+      <Tab.Screen name="Batches" component={BatchesPlaceholder} />
+      <Tab.Screen name="Players" component={PlayersPlaceholder} />
+      <Tab.Screen name="Account" component={AccountPlaceholder} />
+    </Tab.Navigator>
+  );
+}
+
+// --- THE ROOT STACK NAVIGATOR ---
 export function AppNavigator() {
   return (
     <NavigationContainer theme={CustomTheme}>
@@ -68,20 +131,13 @@ export function AppNavigator() {
           gestureEnabled: true,
           gestureDirection: 'horizontal',
         }}>
+        
+        {/* MainTabs holds the Footer */}
         <Stack.Screen
-          name="Home"
-          component={Home}
+          name="MainTabs"
+          component={MainTabs}
           options={{
             headerShown: false,
-          }}
-        />
-
-        <Stack.Screen
-          name="SessionList"
-          component={SessionList}
-          options={{
-            headerShown: false,
-            title: 'All Sessions',
           }}
         />
 
