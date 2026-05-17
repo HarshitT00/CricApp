@@ -30,30 +30,23 @@ export const RegisterPlayer = () => {
 
       const playerId = data.id || `player_${Date.now()}`;
 
-      console.log("Extracting facial features...");
+      // ADD THESE LOGS
+      console.log("=== REGISTRATION START ===");
+      console.log("Player ID:", playerId);
+      console.log("Player Name:", data.name);
+      console.log("Image path:", data.image);
+      console.log("Image type:", typeof data.image);
+
+      console.log("=== IMAGE PATH ===", data.image);
+      Alert.alert("Image Path", data.image);
+
       const mlResponse = await registerFace(playerId, data.image);
-      console.log("ML Model Response:", mlResponse);
-
-      const newPlayer: PlayerInfo = { ...data, id: playerId };
-
-      const existingPlayersStr = await AsyncStorage.getItem('@players_list');
-      const existingPlayers: PlayerInfo[] = existingPlayersStr ? JSON.parse(existingPlayersStr) : [];
-      
-      if (isEditMode) {
-        const index = existingPlayers.findIndex(p => p.id === playerId);
-        if (index > -1) existingPlayers[index] = newPlayer;
-      } else {
-        existingPlayers.push(newPlayer);
-      }
-
-      // Save back to storage
-      await AsyncStorage.setItem('@players_list', JSON.stringify(existingPlayers));
-
-      Alert.alert("Success!", "Player registered and face features saved successfully.");
-      navigation.goBack();
+      console.log("=== ML SUCCESS ===", mlResponse);
 
     } catch (error: any) {
-      console.error(error);
+      console.error("=== REGISTRATION ERROR ===");
+      console.error("Message:", error?.message);
+      console.error("Full error:", JSON.stringify(error));
       Alert.alert("Registration Failed", error?.message || "Could not process face features.");
     } finally {
       setIsSubmitting(false);
