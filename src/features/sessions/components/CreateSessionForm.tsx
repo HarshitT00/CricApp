@@ -7,29 +7,35 @@ import { CreateSessionDetailsSection } from '@/features/sessions/components/Crea
 import { CreateSessionScheduleSection } from '@/features/sessions/components/CreateSessionScheduleSection';
 import { CreateSessionTraineesSection } from '@/features/sessions/components/CreateSessionsTraineesSection';
 import { Batch } from '@/types/Batch';
+import { Session } from '@/types/Session'; // <-- Import Session
 
 interface CreateSessionFormProps {
-  availableBatches: Batch[]; // Now accepts REAL batches from the parent
+  availableBatches: Batch[];
+  initialData?: Session; // <-- Add this optional prop
   onSubmit: (sessionData: any) => void;
 }
 
-export const CreateSessionForm: React.FC<CreateSessionFormProps> = ({ availableBatches, onSubmit }) => {
-  // Session Details State
-  const [name, setName] = useState('');
-  const [facility, setFacility] = useState<'Gym' | 'Pitch'>('Pitch');
+export const CreateSessionForm: React.FC<CreateSessionFormProps> = ({ availableBatches, initialData, onSubmit }) => {
+  // Pre-fill State if initialData exists
+  const [name, setName] = useState(initialData?.name || '');
+  const [facility, setFacility] = useState<'Gym' | 'Pitch'>(initialData?.facility || 'Pitch');
 
-  // Schedule State
-  const [isRepeating, setIsRepeating] = useState(false);
-  const [date, setDate] = useState('');
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
-  const [startTime, setStartTime] = useState('');
-  const [endTime, setEndTime] = useState('');
-  const [selectedDays, setSelectedDays] = useState<string[]>([]);
+  const [isRepeating, setIsRepeating] = useState(initialData?.schedule.isRepeating || false);
+  const [date, setDate] = useState(initialData?.schedule.date || '');
+  const [startDate, setStartDate] = useState(initialData?.schedule.startDate || '');
+  const [endDate, setEndDate] = useState(initialData?.schedule.endDate || '');
+  const [startTime, setStartTime] = useState(initialData?.schedule.startTime || '');
+  const [endTime, setEndTime] = useState(initialData?.schedule.endTime || '');
+  const [selectedDays, setSelectedDays] = useState<string[]>(initialData?.schedule.selectedDays || []);
   
-  // Batches State
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedBatches, setSelectedBatches] = useState<Batch[]>([]);
+  
+  // Cross-reference saved batch IDs with the real batch objects to populate the chips
+  const [selectedBatches, setSelectedBatches] = useState<Batch[]>(
+    initialData?.batchIds 
+      ? availableBatches.filter(b => initialData.batchIds.includes(b.id)) 
+      : []
+  );
 
   const searchResults = useMemo(() => {
     if (!searchQuery.trim()) return [];
@@ -67,7 +73,7 @@ export const CreateSessionForm: React.FC<CreateSessionFormProps> = ({ availableB
         endTime,
         selectedDays: isRepeating ? selectedDays : [],
       },
-      batchIds: selectedBatches.map(b => b.id) // Map array of objects into array of simple strings
+      batchIds: selectedBatches.map(b => b.id)
     });
   };
 
@@ -107,7 +113,9 @@ export const CreateSessionForm: React.FC<CreateSessionFormProps> = ({ availableB
       />
 
       <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-        <Text style={styles.submitButtonText}>Create Session</Text>
+        <Text style={styles.submitButtonText}>
+          {initialData ? 'Update Session' : 'Create Session'}
+        </Text>
       </TouchableOpacity>
     </View>
   );
@@ -116,5 +124,5 @@ export const CreateSessionForm: React.FC<CreateSessionFormProps> = ({ availableB
 const styles = StyleSheet.create({
   container: { paddingTop: spacing.m, paddingBottom: spacing.xxl },
   submitButton: { backgroundColor: colors.primary, padding: 16, borderRadius: spacing.borderRadius, alignItems: 'center', marginTop: spacing.xl },
-  submitButtonText: { color: '#fff', fontSize: 16, fontWeight: 'bold' },
+  submitButtonText: { color: 'black', fontSize: 16, fontWeight: 'bold' },
 });

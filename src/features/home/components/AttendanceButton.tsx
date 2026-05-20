@@ -1,15 +1,40 @@
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import React from 'react';
-import { TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { TouchableOpacity, Text, StyleSheet, View } from 'react-native';
 
 import { colors } from '@/constants/colors';
 import { spacing } from '@/constants/spacing';
 
-export const AttendanceButton = ({ onPress }: { onPress: () => void }) => {
+interface Props {
+  onPress: () => void;
+  disabled?: boolean;
+  sessionName?: string;
+}
+
+export const AttendanceButton = ({ onPress, disabled = false, sessionName }: Props) => {
   return (
-    <TouchableOpacity style={styles.button} onPress={onPress} activeOpacity={0.8}>
-      <MaterialCommunityIcons name="qrcode-scan" size={24} color="black" />
-      <Text style={styles.text}>Start Session Attendance</Text>
+    <TouchableOpacity
+      style={[styles.button, disabled && styles.disabledButton]}
+      onPress={onPress}
+      disabled={disabled}
+      activeOpacity={0.8}
+    >
+      <View style={styles.iconContainer}>
+         <MaterialCommunityIcons name="qrcode-scan" size={24} color="black" />
+      </View>
+      <View style={styles.textContainer}>
+        <Text style={[styles.title, disabled && styles.disabledText]}>
+          Start Session Attendance
+        </Text>
+        <Text style={[styles.subtitle, disabled && styles.disabledText]}>
+          {disabled 
+            ? 'Available 30 mins before start' 
+            : `Tap to mark ${sessionName ? `for ${sessionName}` : 'attendance'}`}
+        </Text>
+      </View>
+      {!disabled && (
+        <Ionicons name="chevron-forward" size={24} color="black" />
+      )}
     </TouchableOpacity>
   );
 };
@@ -17,17 +42,41 @@ export const AttendanceButton = ({ onPress }: { onPress: () => void }) => {
 const styles = StyleSheet.create({
   button: {
     backgroundColor: colors.primary,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: 18,
     borderRadius: 16,
+    padding: spacing.l,
+    flexDirection: 'row',
+    alignItems: 'center',
     marginBottom: spacing.xl,
-    gap: 12,
+    shadowColor: colors.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 5,
   },
-  text: {
+  disabledButton: {
+    backgroundColor: colors.surfaceLight,
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+    shadowOpacity: 0,
+    elevation: 0,
+  },
+  iconContainer: {
+    marginRight: spacing.m,
+  },
+  textContainer: {
+    flex: 1,
+  },
+  title: {
     color: 'black',
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
+    marginBottom: 4,
+  },
+  subtitle: {
+    color: 'black',
+    fontSize: 14,
+  },
+  disabledText: {
+    color: colors.text.secondary,
   },
 });

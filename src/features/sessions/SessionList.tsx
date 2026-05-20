@@ -61,6 +61,9 @@ export const SessionList = () => {
   const handleCreateSession = () => {
     navigation.navigate('CreateSession');
   };
+  const handleSessionPress = (session: Session) => {
+    navigation.navigate('CreateSession', { sessionInfo: session });
+  };
 
   return (
     <ScreenWrapper>
@@ -83,7 +86,7 @@ export const SessionList = () => {
             keyExtractor={item => item.id}
             contentContainerStyle={styles.listContent}
             ItemSeparatorComponent={() => <View style={{ height: spacing.m }} />}
-            renderItem={({ item }) => <SessionCard session={item} height={150} />}
+            renderItem={({ item }) => <SessionCard session={item} height={150} onPress={() => handleSessionPress(item)} />}
             ListEmptyComponent={
               <View style={styles.emptyContainer}>
                 <Text style={styles.emptyText}>No {activeTab.toLowerCase()} sessions found.</Text>

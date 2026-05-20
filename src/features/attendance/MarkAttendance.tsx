@@ -1,82 +1,93 @@
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { useNavigation, useRoute, RouteProp, useFocusEffect } from '@react-navigation/native';
+import React, { useState, useCallback } from 'react';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
 
+import { TraineeAttendanceRow } from './components/TraineeAttendanceRow';
 import { ScreenHeader } from '@/components/ScreenHeader';
 import { ScreenWrapper } from '@/components/ScreenWrapper';
-import { SessionCard } from '@/components/SessionCard';
 import { colors } from '@/constants/colors';
 import { spacing } from '@/constants/spacing';
-import { TraineeAttendanceRow } from '@/features/attendance/components/TraineeAttendanceRow';
-import { Player } from '@/types/Player';
+import { RootStackParamList } from '@/navigation/types';
+import { batchStorage } from '@/services/batchStorage';
+import { playerStorage } from '@/services/playerStorage';
+import { sessionStorage } from '@/services/sessionStorage';
+import { PlayerInfo } from '@/types/PlayerInfo';
 import { Session } from '@/types/Session';
 
-// --- MOCK DATA ---
-const MOCK_TRAINEES: Player[] = [
-  {
-    id: '1',
-    name: 'Rahul D.',
-    role: 'Wicket Keeper',
-    image: '',
-    country: 'IN',
-    stats: { matches: 0, runs: 0, wickets: 0 },
-  },
-  {
-    id: '2',
-    name: 'Virat K.',
-    role: 'Batsman',
-    image: '',
-    country: 'IN',
-    stats: { matches: 0, runs: 0, wickets: 0 },
-  },
-  {
-    id: '3',
-    name: 'Jasprit B.',
-    role: 'Bowler',
-    image: '',
-    country: 'IN',
-    stats: { matches: 0, runs: 0, wickets: 0 },
-  },
-  {
-    id: '4',
-    name: 'Hardik P.',
-    role: 'All Rounder',
-    image: '',
-    country: 'IN',
-    stats: { matches: 0, runs: 0, wickets: 0 },
-  },
-  {
-    id: '5',
-    name: 'Rohit S.',
-    role: 'Batsman',
-    image: '',
-    country: 'IN',
-    stats: { matches: 0, runs: 0, wickets: 0 },
-  },
-];
-
-const MOCK_SESSION: Session = {
-  id: 's1',
-  title: 'Morning Net Session',
-  batch: 'Under-19 Elite Batch',
-  time: '07:00 - 09:00 AM',
-  location: 'Oval Ground A',
-  status: 'ONGOING',
-  image: 'https://images.unsplash.com/photo-1624526267942-ab0ff8a3e972?q=80&w=2067',
-};
-
-type AttendanceStatus = 'PRESENT' | 'ABSENT';
+// Removed 'late' from the type
+export interface AttendanceTrainee extends PlayerInfo {
+  status: 'present' | 'absent' | 'pending';
+}
 
 export const MarkAttendance = () => {
   const navigation = useNavigation();
-  const [attendanceState, setAttendanceState] = useState<Record<string, AttendanceStatus>>({});
+  const route = useRoute<RouteProp<RootStackParamList, 'MarkAttendance'>>();
+  const { sessionId } = route.params;
 
-  const handleMarkTrainee = (id: string, status: AttendanceStatus) => {
-    setAttendanceState(prev => ({ ...prev, [id]: status }));
+  const [session, setSession] = useState<Session | null>(null);
+  const [trainees, setTrainees] = useState<AttendanceTrainee[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useFocusEffect(
+    useCallback(() => {
+      const loadData = async () => {
+        setIsLoading(true);
+        try {
+          const allSessions = await sessionStorage.getSessions();
+          const currentSession = allSessions.find(s => s.id === sessionId);
+          if (!currentSession) return;
+          setSession(currentSession);
+
+          const allBatches = await batchStorage.getBatches();
+          const sessionBatches = allBatches.filter(b => currentSession.batchIds.includes(b.id));
+
+          const playerIds = new Set<string>();
+          sessionBatches.forEach(batch => {
+            batch.playerIds.forEach(id => playerIds.add(id));
+          });
+
+          const allPlayers = await playerStorage.getPlayers();
+          const sessionPlayers = allPlayers.filter(p => playerIds.has(p.id));
+          
+          setTrainees(
+            sessionPlayers.map(p => ({ ...p, status: 'pending' }))
+          );
+
+        } catch (error) {
+          console.error("Failed to load attendance data", error);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+
+      loadData();
+    }, [sessionId])
+  );
+
+  const handleStatusChange = (traineeId: string, newStatus: AttendanceTrainee['status']) => {
+    setTrainees(prev =>
+      prev.map(t => (t.id === traineeId ? { ...t, status: newStatus } : t))
+    );
   };
 
-  const markedCount = Object.keys(attendanceState).length;
+  const handleSaveAttendance = () => {
+    console.log("Saving Attendance for:", trainees);
+    navigation.goBack();
+  };
+
+  const displayTime = session?.schedule?.startTime 
+    ? `${session.schedule.date ? session.schedule.date + ' • ' : ''}${session.schedule.startTime}`
+    : 'Time TBD';
+
+  if (isLoading || !session) {
+    return (
+      <ScreenWrapper>
+        <ScreenHeader title="Mark Attendance" leftIconName="arrow-back" onLeftPress={() => navigation.goBack()} />
+        <View style={styles.centerContainer}><ActivityIndicator size="large" color={colors.primary} /></View>
+      </ScreenWrapper>
+    );
+  }
 
   return (
     <ScreenWrapper>
@@ -86,152 +97,137 @@ export const MarkAttendance = () => {
         onLeftPress={() => navigation.goBack()}
       />
 
-      <View style={styles.content}>
-        <SessionCard session={MOCK_SESSION} style={styles.sessionCard} />
-        <View style={styles.actionRow}>
-          <TouchableOpacity style={styles.actionBtn} activeOpacity={0.8}>
-            <MaterialCommunityIcons name="qrcode-scan" size={18} color={colors.text.primary} />
-            <Text style={styles.actionBtnText}>Scan QR</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.actionBtn} activeOpacity={0.8}>
-            <MaterialCommunityIcons name="face-recognition" size={18} color={colors.text.primary} />
-            <Text style={styles.actionBtnText}>Face ID</Text>
-          </TouchableOpacity>
-        </View>
-        <View style={styles.studentsHeader}>
-          <Text style={styles.studentsTitle}>Students ({MOCK_TRAINEES.length})</Text>
-          <View style={styles.markedPill}>
-            <Text style={styles.markedPillText}>
-              {markedCount}/{MOCK_TRAINEES.length} Marked
-            </Text>
+      <View style={styles.sessionCard}>
+        <Text style={styles.sessionTitle}>{session.name}</Text>
+        <View style={styles.metaRow}>
+          <View style={styles.metaItem}>
+            <Ionicons name="time-outline" size={18} color={colors.text.secondary} />
+            <Text style={styles.metaText}>{displayTime}</Text>
+          </View>
+          <View style={styles.metaItem}>
+            <Ionicons name="location-outline" size={18} color={colors.text.secondary} />
+            <Text style={styles.metaText}>{session.facility}</Text>
           </View>
         </View>
+      </View>
 
+      <View style={styles.rosterHeader}>
+        <Text style={styles.rosterTitle}>
+          Trainees ({trainees.filter(t => t.status === 'present').length}/{trainees.length})
+        </Text>
+      </View>
+
+      {trainees.length === 0 ? (
+        <View style={styles.centerContainer}>
+          <Text style={styles.emptyText}>No trainees enrolled.</Text>
+          <Text style={styles.emptySubText}>Add players to the batches assigned to this session.</Text>
+        </View>
+      ) : (
         <FlatList
-          data={MOCK_TRAINEES}
+          data={trainees}
           keyExtractor={item => item.id}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.listContent}
+          contentContainerStyle={styles.listContainer}
           renderItem={({ item }) => (
             <TraineeAttendanceRow
-              trainee={item}
-              status={attendanceState[item.id] || null}
-              onMarkPresent={() => handleMarkTrainee(item.id, 'PRESENT')}
-              onMarkAbsent={() => handleMarkTrainee(item.id, 'ABSENT')}
+              trainee={item} 
+              status={item.status}
+              onStatusChange={status => handleStatusChange(item.id, status)}
             />
           )}
         />
-      </View>
-      <View style={styles.footer}>
-        <TouchableOpacity
-          style={styles.submitButton}
-          onPress={() => {
-            console.log('Saved Attendance Data:', attendanceState);
-            navigation.goBack();
-          }}
-          activeOpacity={0.8}>
-          <Text style={styles.submitButtonText}>Submit Attendance</Text>
-          <View style={styles.submitCountBadge}>
-            <Text style={styles.submitCountText}>
-              {markedCount}/{MOCK_TRAINEES.length}
-            </Text>
-          </View>
-        </TouchableOpacity>
-      </View>
+      )}
+
+      {trainees.length > 0 && (
+        <View style={styles.footer}>
+          <TouchableOpacity style={styles.saveBtn} onPress={handleSaveAttendance}>
+            <Text style={styles.saveBtnText}>Save Attendance</Text>
+          </TouchableOpacity>
+        </View>
+      )}
     </ScreenWrapper>
   );
 };
 
 const styles = StyleSheet.create({
-  content: {
-    flex: 1,
-  },
+  centerContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  emptyText: { color: colors.text.primary, fontSize: 18, fontWeight: 'bold', marginBottom: 8 },
+  emptySubText: { color: colors.text.secondary, fontSize: 14, textAlign: 'center', paddingHorizontal: spacing.xl },
   sessionCard: {
-    marginBottom: spacing.s,
+    backgroundColor: colors.surface,
+    padding: spacing.xl, // Increased padding to make the card taller
+    minHeight: 120, // Forced minimum height
+    justifyContent: 'center',
+    borderRadius: spacing.borderRadius,
+    marginBottom: spacing.l,
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
   },
-  actionRow: {
-    flexDirection: 'row',
-    gap: spacing.s,
+  sessionTitle: {
+    fontSize: 22, // Increased font size to fit the larger card
+    fontWeight: 'bold',
+    color: colors.text.primary,
     marginBottom: spacing.m,
   },
-  actionBtn: {
-    flex: 1,
+  metaRow: {
+    flexDirection: 'row',
+    gap: spacing.l,
+  },
+  metaItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-    paddingVertical: 14,
-    borderRadius: spacing.borderRadius,
+    gap: 6,
   },
-  actionBtnText: {
-    color: colors.text.primary,
-    fontSize: 15,
-    fontWeight: '600',
+  metaText: {
+    fontSize: 15, // Increased text size slightly
+    color: colors.text.secondary,
   },
-  studentsHeader: {
+  rosterHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: spacing.s,
+    marginBottom: spacing.m,
   },
-  studentsTitle: {
-    color: colors.text.primary,
-    fontSize: 17,
+  rosterTitle: {
+    fontSize: 18,
     fontWeight: 'bold',
+    color: colors.text.primary,
   },
-  markedPill: {
-    backgroundColor: colors.surfaceLight,
-    paddingHorizontal: 12,
-    paddingVertical: 5,
+  faceScanBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.primary,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
     borderRadius: 20,
-    borderWidth: 1,
-    borderColor: colors.border,
+    gap: 8,
   },
-  markedPillText: {
-    color: colors.text.secondary,
-    fontSize: 12,
-    fontWeight: '600',
+  faceScanText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 14,
   },
-
-  listContent: {
-    paddingBottom: spacing.xxl + 80,
+  listContainer: {
+    paddingBottom: 100,
   },
   footer: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
-    padding: spacing.screenPadding,
+    padding: spacing.m,
     backgroundColor: colors.background,
     borderTopWidth: 1,
-    borderTopColor: colors.border,
+    borderColor: '#e0e0e0',
   },
-  submitButton: {
+  saveBtn: {
     backgroundColor: colors.primary,
-    paddingVertical: 16,
+    padding: 16,
     borderRadius: spacing.borderRadius,
     alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    gap: 12,
   },
-  submitButtonText: {
-    color: colors.background,
+  saveBtnText: {
+    color: 'black',
     fontSize: 16,
-    fontWeight: 'bold',
-  },
-  submitCountBadge: {
-    backgroundColor: 'rgba(0,0,0,0.25)',
-    paddingHorizontal: 10,
-    paddingVertical: 3,
-    borderRadius: 20,
-  },
-  submitCountText: {
-    color: colors.background,
-    fontSize: 13,
     fontWeight: 'bold',
   },
 });
