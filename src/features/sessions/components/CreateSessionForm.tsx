@@ -9,21 +9,14 @@ import { CreateSessionTraineesSection } from '@/features/sessions/components/Cre
 import { Batch } from '@/types/Batch';
 
 interface CreateSessionFormProps {
+  availableBatches: Batch[]; // Now accepts REAL batches from the parent
   onSubmit: (sessionData: any) => void;
 }
 
-const DUMMY_BATCHES: Batch[] = [
-  { id: '1', name: 'U-19 Pro Batting' },
-  { id: '2', name: 'U-19 Pro Bowling' },
-  { id: '3', name: 'Senior Men T20' },
-  { id: '4', name: 'Beginners Batch A' },
-  { id: '5', name: 'Weekend Warriors' },
-];
-
-export const CreateSessionForm: React.FC<CreateSessionFormProps> = ({ onSubmit }) => {
+export const CreateSessionForm: React.FC<CreateSessionFormProps> = ({ availableBatches, onSubmit }) => {
   // Session Details State
   const [name, setName] = useState('');
-  const [facility, setFacility] = useState('');
+  const [facility, setFacility] = useState<'Gym' | 'Pitch'>('Pitch');
 
   // Schedule State
   const [isRepeating, setIsRepeating] = useState(false);
@@ -33,36 +26,30 @@ export const CreateSessionForm: React.FC<CreateSessionFormProps> = ({ onSubmit }
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
+  
+  // Batches State
   const [searchQuery, setSearchQuery] = useState('');
-
-  // Starting with the mock batch from your design
-  const [selectedBatches, setSelectedBatches] = useState<Batch[]>([
-    { id: '1', name: 'U-19 Pro Batting' },
-    { id: '2', name: 'U-19 Pro Bowling' },
-    { id: '3', name: 'U-17 Bowling' },
-  ]);
+  const [selectedBatches, setSelectedBatches] = useState<Batch[]>([]);
 
   const searchResults = useMemo(() => {
     if (!searchQuery.trim()) return [];
 
-    return DUMMY_BATCHES.filter(
+    return availableBatches.filter(
       batch =>
         batch.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
-        // Prevent showing batches that are already selected
         !selectedBatches.find(selected => selected.id === batch.id),
     );
-  }, [searchQuery, selectedBatches]);
+  }, [searchQuery, selectedBatches, availableBatches]);
 
   const handleSelectSearchResult = (batch: Batch) => {
-    setSelectedBatches(prev => [...prev, batch]); // Add to chips
-    setSearchQuery(''); // Clear the search bar
+    setSelectedBatches(prev => [...prev, batch]);
+    setSearchQuery('');
   };
 
   const handleRemoveBatch = (idToRemove: string) => {
     setSelectedBatches(prev => prev.filter(batch => batch.id !== idToRemove));
   };
 
-  // Handlers
   const handleToggleDay = (day: string) => {
     setSelectedDays(prev => (prev.includes(day) ? prev.filter(d => d !== day) : [...prev, day]));
   };
@@ -80,12 +67,12 @@ export const CreateSessionForm: React.FC<CreateSessionFormProps> = ({ onSubmit }
         endTime,
         selectedDays: isRepeating ? selectedDays : [],
       },
+      batchIds: selectedBatches.map(b => b.id) // Map array of objects into array of simple strings
     });
   };
 
   return (
     <View style={styles.container}>
-      {/* 1. Session Details */}
       <CreateSessionDetailsSection
         name={name}
         onChangeName={setName}
@@ -93,7 +80,6 @@ export const CreateSessionForm: React.FC<CreateSessionFormProps> = ({ onSubmit }
         onChangeFacility={setFacility}
       />
 
-      {/* 2. Schedule */}
       <CreateSessionScheduleSection
         isRepeating={isRepeating}
         onToggleRepeat={setIsRepeating}
@@ -111,7 +97,6 @@ export const CreateSessionForm: React.FC<CreateSessionFormProps> = ({ onSubmit }
         onToggleDay={handleToggleDay}
       />
 
-      {/* 3. Trainees */}
       <CreateSessionTraineesSection
         searchQuery={searchQuery}
         onChangeSearch={setSearchQuery}
@@ -129,20 +114,7 @@ export const CreateSessionForm: React.FC<CreateSessionFormProps> = ({ onSubmit }
 };
 
 const styles = StyleSheet.create({
-  container: {
-    paddingTop: spacing.m,
-    paddingBottom: spacing.xxl,
-  },
-  submitButton: {
-    backgroundColor: colors.primary,
-    padding: 16,
-    borderRadius: spacing.borderRadius,
-    alignItems: 'center',
-    marginTop: spacing.xl,
-  },
-  submitButtonText: {
-    color: colors.background,
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
+  container: { paddingTop: spacing.m, paddingBottom: spacing.xxl },
+  submitButton: { backgroundColor: colors.primary, padding: 16, borderRadius: spacing.borderRadius, alignItems: 'center', marginTop: spacing.xl },
+  submitButtonText: { color: '#fff', fontSize: 16, fontWeight: 'bold' },
 });

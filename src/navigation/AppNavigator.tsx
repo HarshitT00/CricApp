@@ -2,12 +2,14 @@ import 'react-native-gesture-handler';
 import { Ionicons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
-import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, Platform } from 'react-native';
 
 import { colors } from '@/constants/colors';
 import { MarkAttendance } from '@/features/attendance/MarkAttendance';
+import { BatchDetails } from '@/features/batches/BatchDetails';
+import { BatchesList } from '@/features/batches/BatchesList';
 import { Home } from '@/features/home/Home';
 import { PlayersList } from '@/features/players/PlayersList';
 import { RegisterPlayer } from '@/features/players/RegisterPlayer';
@@ -15,21 +17,14 @@ import { CreateSession } from '@/features/sessions/CreateSession';
 import { SessionList } from '@/features/sessions/SessionList';
 import { RootStackParamList } from '@/navigation/types';
 
-const Stack = createStackNavigator<RootStackParamList>();
+const Stack = createNativeStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator();
 
-// --- Placeholders for screens you haven't imported yet ---
-const BatchesPlaceholder = () => (
-  <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-    <Text>Batches Screen</Text>
-  </View>
-);
 const AccountPlaceholder = () => (
   <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
     <Text>Account Screen</Text>
   </View>
 );
-// ---------------------------------------------------------
 
 const CustomTheme = {
   ...DefaultTheme,
@@ -44,17 +39,13 @@ const CustomTheme = {
   },
 };
 
-const transitionConfig = {
-  animation: 'spring' as const,
-  config: {
-    stiffness: 1000,
-    damping: 500,
-    mass: 3,
-    overshootClamping: true,
-    restDisplacementThreshold: 0.01,
-    restSpeedThreshold: 0.01,
-  },
-};
+// Shared screen options applied to every stack screen
+const screenOptions = {
+  headerShown: false,
+  animation: Platform.OS === 'android' ? 'slide_from_right' : 'default',
+  // Fix green flash: set background on the native screen itself, not just contentStyle
+  contentStyle: { backgroundColor: colors.background },
+} as const;
 
 function MainTabs() {
   return (
@@ -98,51 +89,23 @@ function MainTabs() {
       })}>
       <Tab.Screen name="Home" component={Home} />
       <Tab.Screen name="Sessions" component={SessionList} />
-      <Tab.Screen name="Batches" component={BatchesPlaceholder} />
+      <Tab.Screen name="Batches" component={BatchesList} />
       <Tab.Screen name="Players" component={PlayersList} />
       <Tab.Screen name="Account" component={AccountPlaceholder} />
     </Tab.Navigator>
   );
 }
 
-// --- THE ROOT STACK NAVIGATOR ---
 export function AppNavigator() {
   return (
     <NavigationContainer theme={CustomTheme}>
-      <Stack.Navigator
-        screenOptions={{
-          headerStyle: {
-            backgroundColor: colors.background,
-            elevation: 0,
-            shadowOpacity: 0,
-            borderBottomWidth: 0,
-          },
-          headerTitleStyle: {
-            color: colors.text.primary,
-            fontWeight: '600',
-            fontSize: 17,
-          },
-          headerTintColor: colors.primary,
-          headerBackTitle: '',
-          cardStyle: {
-            backgroundColor: colors.background,
-          },
-          cardOverlayEnabled: false,
-          cardShadowEnabled: false,
-          cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
-          transitionSpec: {
-            open: transitionConfig,
-            close: transitionConfig,
-          },
-          gestureEnabled: true,
-          gestureDirection: 'horizontal',
-        }}>
-        {/* MainTabs holds the Footer */}
+      <Stack.Navigator screenOptions={screenOptions}>
         <Stack.Screen
           name="MainTabs"
           component={MainTabs}
           options={{
-            headerShown: false,
+            animation: 'none',
+            contentStyle: { backgroundColor: colors.background },
           }}
         />
 
@@ -150,8 +113,7 @@ export function AppNavigator() {
           name="CreateSession"
           component={CreateSession}
           options={{
-            headerShown: false,
-            title: 'Create Sessions',
+            contentStyle: { backgroundColor: colors.background },
           }}
         />
 
@@ -159,15 +121,24 @@ export function AppNavigator() {
           name="MarkAttendance"
           component={MarkAttendance}
           options={{
-            headerShown: false,
-            title: 'Mark Attendance',
+            contentStyle: { backgroundColor: colors.background },
           }}
         />
 
         <Stack.Screen
           name="RegisterPlayer"
           component={RegisterPlayer}
-          options={{ headerShown: false }}
+          options={{
+            contentStyle: { backgroundColor: colors.background },
+          }}
+        />
+
+        <Stack.Screen
+          name="BatchDetails"
+          component={BatchDetails}
+          options={{
+            contentStyle: { backgroundColor: colors.background },
+          }}
         />
       </Stack.Navigator>
     </NavigationContainer>

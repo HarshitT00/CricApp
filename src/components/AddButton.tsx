@@ -4,11 +4,11 @@ import { TouchableOpacity, StyleSheet } from 'react-native';
 
 import { colors } from '@/constants/colors';
 
-interface CreateSessionFabProps {
+interface AddButtonProps {
   onPress: () => void;
 }
 
-export const CreateSessionFab = ({ onPress }: CreateSessionFabProps) => {
+export const AddButton = ({ onPress }: AddButtonProps) => {
   return (
     <TouchableOpacity style={styles.fab} onPress={onPress} activeOpacity={0.8}>
       <Ionicons name="add" size={32} color="#000" />

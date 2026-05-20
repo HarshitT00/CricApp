@@ -22,35 +22,7 @@ import { VerificationList } from '@/features/home/components/VerificationList';
 import { RootStackParamList } from '@/navigation/types';
 import { Session } from '@/types/Session';
 
-const MOCK_SESSIONS: Session[] = [
-  {
-    id: '1',
-    title: 'U16 Nets Practice',
-    location: 'Pitch 3, North Wing',
-    time: '07:00 AM',
-    image: 'https://images.unsplash.com/photo-1531415074968-036ba1b575da?q=80&w=2067',
-    status: 'UPCOMING',
-    batch: 'Under-16 Elite Batch',
-  },
-  {
-    id: '2',
-    title: 'Fielding Drills',
-    location: 'Main Ground',
-    time: '09:30 AM',
-    image: 'https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?q=80&w=2067',
-    status: 'UPCOMING',
-    batch: 'Under-19 Elite Batch',
-  },
-  {
-    id: '3',
-    title: 'Batting Practice',
-    location: 'Pitch 1, South Wing',
-    time: '02:00 PM',
-    image: 'https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?q=80&w=2067',
-    status: 'UPCOMING',
-    batch: 'Under-19 Elite Batch',
-  },
-];
+const MOCK_SESSIONS: Session[] = [];
 
 const { width } = Dimensions.get('window');
 

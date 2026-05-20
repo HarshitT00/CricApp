@@ -33,7 +33,24 @@ export const SessionCard = ({ session, onPress, width, height = 170, style }: Se
   const isLive = session.status === 'LIVE';
   const isOngoing = session.status === 'ONGOING';
   const isActive = isLive || isOngoing;
-  const hasImage = !!session.image;
+  
+  // The new session type doesn't have images by default, but we check just in case
+  const hasImage = !!(session as any).image; 
+
+  // Map the new fields (with fallbacks just in case old dummy data exists)
+  const displayTitle = session.name || (session as any).title || 'Unnamed Session';
+  const displayLocation = session.facility || (session as any).location || 'Unknown Facility';
+  
+  // Format the time from the schedule object
+  const displayTime = session.schedule?.startTime 
+    ? `${session.schedule.date ? session.schedule.date + ' • ' : ''}${session.schedule.startTime}`
+    : (session as any).time || 'TBD';
+
+  // Count the assigned batches
+  const batchCount = session.batchIds?.length || 0;
+  const displayBatch = batchCount > 0 
+    ? `${batchCount} ${batchCount === 1 ? 'Batch' : 'Batches'} Assigned`
+    : (session as any).batch || 'No batches assigned';
 
   return (
     <TouchableOpacity
@@ -45,7 +62,7 @@ export const SessionCard = ({ session, onPress, width, height = 170, style }: Se
         style,
       ]}>
       {hasImage ? (
-        <Image source={{ uri: session.image }} style={styles.image} resizeMode="cover" />
+        <Image source={{ uri: (session as any).image }} style={styles.image} resizeMode="cover" />
       ) : null}
       {hasImage && <View style={styles.overlay} />}
       <View style={[styles.content, !hasImage && styles.contentNoImage]}>
@@ -61,46 +78,39 @@ export const SessionCard = ({ session, onPress, width, height = 170, style }: Se
           </View>
         </View>
 
-        {/* Session Title & Batch */}
         <View>
           <Text style={[styles.title, hasImage && styles.titleOnImage]} numberOfLines={1}>
-            {session.title}
+            {displayTitle}
           </Text>
-          {session.batch ? (
-            <Text style={[styles.batch, hasImage && styles.batchOnImage]} numberOfLines={1}>
-              {session.batch}
-            </Text>
-          ) : null}
+          <Text style={[styles.batch, hasImage && styles.batchOnImage]} numberOfLines={1}>
+            {displayBatch}
+          </Text>
 
-          {/* Divider */}
           <View style={[styles.divider, !hasImage && styles.dividerNoImage]} />
 
-          {/* Meta: Time + Location */}
           <View style={styles.metaRow}>
             <View style={styles.metaItem}>
               <Ionicons
                 name="time-outline"
                 size={13}
-                color={hasImage ? colors.text.onImage : colors.primary}
+                color={hasImage ? (colors.text as any).onImage : colors.primary}
               />
               <Text style={[styles.metaText, hasImage && styles.metaTextOnImage]}>
-                {session.time}
+                {displayTime}
               </Text>
             </View>
-            {session.location ? (
-              <View style={styles.metaItem}>
-                <Ionicons
-                  name="location-outline"
-                  size={13}
-                  color={hasImage ? colors.text.onImage : colors.primary}
-                />
-                <Text
-                  style={[styles.metaText, hasImage && styles.metaTextOnImage]}
-                  numberOfLines={1}>
-                  {session.location}
-                </Text>
-              </View>
-            ) : null}
+            <View style={styles.metaItem}>
+              <Ionicons
+                name="location-outline"
+                size={13}
+                color={hasImage ? (colors.text as any).onImage : colors.primary}
+              />
+              <Text
+                style={[styles.metaText, hasImage && styles.metaTextOnImage]}
+                numberOfLines={1}>
+                {displayLocation}
+              </Text>
+            </View>
           </View>
         </View>
       </View>

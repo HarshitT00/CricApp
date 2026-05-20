@@ -2,17 +2,19 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
 import { Chip } from '@/components/Chip';
-import { SearchBar, SearchResult } from '@/components/SearchBar'; // Ensure SearchResult is exported from SearchBar
+import { SearchBar } from '@/components/SearchBar';
 import { colors } from '@/constants/colors';
 import { spacing } from '@/constants/spacing';
+import { Batch } from '@/types/Batch'; // <-- Import the real Batch type
 
 interface CreateSessionTraineesSectionProps {
   searchQuery: string;
   onChangeSearch: (query: string) => void;
-  selectedBatches: SearchResult[];
+  // Replace SearchResult with Batch!
+  selectedBatches: Batch[];
   onRemoveBatch: (id: string) => void;
-  searchResults: SearchResult[];
-  onSelectSearchResult: (batch: SearchResult) => void;
+  searchResults: Batch[];
+  onSelectSearchResult: (batch: Batch) => void;
 }
 
 export const CreateSessionTraineesSection: React.FC<CreateSessionTraineesSectionProps> = ({
@@ -30,7 +32,6 @@ export const CreateSessionTraineesSection: React.FC<CreateSessionTraineesSection
       <View style={styles.fieldContainer}>
         <Text style={styles.label}>Assign Batches</Text>
 
-        {/* The SearchBar now handles the dropdown automatically! */}
         <SearchBar
           value={searchQuery}
           onChangeText={onChangeSearch}
@@ -39,7 +40,6 @@ export const CreateSessionTraineesSection: React.FC<CreateSessionTraineesSection
           onSelectResult={onSelectSearchResult}
         />
 
-        {/* Selected Batches Chips */}
         {selectedBatches.length > 0 && (
           <View style={styles.chipsContainer}>
             {selectedBatches.map(batch => (
@@ -55,7 +55,7 @@ export const CreateSessionTraineesSection: React.FC<CreateSessionTraineesSection
 const styles = StyleSheet.create({
   container: {
     marginBottom: spacing.xl,
-    zIndex: 1000, // Ensure this entire section can float above subsequent sections
+    zIndex: 1000,
   },
   sectionHeader: {
     fontSize: 12,
@@ -78,5 +78,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: spacing.s,
+    marginTop: spacing.m, // Added a tiny bit of margin to separate chips from the search bar
   },
 });

@@ -1,53 +1,43 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useNavigation, RouteProp, useRoute } from '@react-navigation/native';
+import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useState } from 'react';
 import { StyleSheet, View, Alert } from 'react-native';
-
-import { registerFace } from 'react-native-facerecognition';
 
 import { ScreenHeader } from '@/components/ScreenHeader';
 import { ScreenWrapper } from '@/components/ScreenWrapper';
 import { PlayerForm } from '@/features/players/components/PlayerForm';
 import { RootStackParamList } from '@/navigation/types';
-import { PlayerInfo } from '@/types/PlayerInfo';
+import { playerStorage } from '@/services/playerStorage';
 
 export const RegisterPlayer = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const route = useRoute<RouteProp<Record<string, { playerInfo?: PlayerInfo }>, string>>();
-  const isEditMode = !!route.params?.playerInfo;
-  
+
+  // 1. Strictly type the route so TypeScript knows what parameters exist
+  const route = useRoute<RouteProp<RootStackParamList, 'RegisterPlayer'>>();
+
+  // 2. Look for 'playerInfo' instead of 'player'
+  const playerInfo = route.params?.playerInfo;
+  const isEditMode = !!playerInfo;
+
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = async (data: PlayerInfo) => {
-    if (!data.name || !data.image) {
-      Alert.alert("Missing Info", "Please provide a name and capture a photo.");
-      return;
-    }
-
+  const handleSubmit = async (data: any) => {
     try {
       setIsSubmitting(true);
 
-      const playerId = data.id || `player_${Date.now()}`;
+      // 3. IMPORTANT: If editing, ensure we keep the original ID so it overwrites
+      // instead of creating a duplicate player!
+      const playerDataToSave = {
+        ...data,
+        id: playerInfo?.id,
+      };
 
-      // ADD THESE LOGS
-      console.log("=== REGISTRATION START ===");
-      console.log("Player ID:", playerId);
-      console.log("Player Name:", data.name);
-      console.log("Image path:", data.image);
-      console.log("Image type:", typeof data.image);
+      await playerStorage.savePlayer(playerDataToSave);
 
-      console.log("=== IMAGE PATH ===", data.image);
-      Alert.alert("Image Path", data.image);
-
-      const mlResponse = await registerFace(playerId, data.image);
-      console.log("=== ML SUCCESS ===", mlResponse);
-
-    } catch (error: any) {
-      console.error("=== REGISTRATION ERROR ===");
-      console.error("Message:", error?.message);
-      console.error("Full error:", JSON.stringify(error));
-      Alert.alert("Registration Failed", error?.message || "Could not process face features.");
+      Alert.alert('Success', `Player successfully ${isEditMode ? 'updated' : 'registered'}!`);
+      navigation.goBack();
+    } catch (error) {
+      Alert.alert('Error', 'Could not save the player details.');
     } finally {
       setIsSubmitting(false);
     }
@@ -57,13 +47,14 @@ export const RegisterPlayer = () => {
     <ScreenWrapper>
       <View style={styles.container}>
         <ScreenHeader
-          title={isEditMode ? 'Player Details' : 'New Registration'}
+          title={isEditMode ? 'Edit Player' : 'New Registration'}
           leftIconName="arrow-back"
           onLeftPress={() => navigation.goBack()}
         />
 
         <PlayerForm
-          initialData={isEditMode ? route.params?.playerInfo : undefined}
+          // 4. Pass the correctly named parameter into the form
+          initialData={playerInfo}
           onSubmit={handleSubmit}
           isSubmitting={isSubmitting}
         />

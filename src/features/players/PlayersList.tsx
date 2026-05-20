@@ -1,112 +1,121 @@
-// src/features/players/PlayersList.tsx
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { StyleSheet, View, FlatList } from 'react-native';
+import React, { useState, useCallback } from 'react';
+import { View, FlatList, StyleSheet, ActivityIndicator, Text } from 'react-native';
 
-import { CreateSessionFab } from '@/components/AddButton';
+import { AddButton } from '@/components/AddButton';
+import { PlayerCard } from '@/components/PlayerCard';
 import { ScreenHeader } from '@/components/ScreenHeader';
 import { ScreenWrapper } from '@/components/ScreenWrapper';
+import { SearchBar } from '@/components/SearchBar';
+import { colors } from '@/constants/colors';
 import { spacing } from '@/constants/spacing';
-import { PlayerCard } from '@/features/players/components/PlayerCard';
 import { RootStackParamList } from '@/navigation/types';
+import { playerStorage } from '@/services/playerStorage';
 import { PlayerInfo } from '@/types/PlayerInfo';
-
-// Mock Data to test our UI
-const MOCK_PLAYERS: PlayerInfo[] = [
-  {
-    id: '1',
-    name: 'Virat Kohli',
-    role: 'Batsman',
-    image: 'https://i.pravatar.cc/150?img=11',
-    age: '18',
-    contactNumber: '1234567890',
-    guardianInfo: {
-      name: 'John Doe',
-      contactNumber: '9876543210',
-    },
-  },
-  {
-    id: '2',
-    name: 'Jasprit Bumrah',
-    role: 'Bowler',
-    image: 'https://i.pravatar.cc/150?img=12',
-    age: '18',
-    contactNumber: '1234567890',
-    guardianInfo: {
-      name: 'John Doe',
-      contactNumber: '9876543210',
-    },
-  },
-  {
-    id: '3',
-    name: 'Hardik Pandya',
-    role: 'All Rounder',
-    image: 'https://i.pravatar.cc/150?img=13',
-    age: '18',
-    contactNumber: '1234567890',
-    guardianInfo: {
-      name: 'John Doe',
-      contactNumber: '9876543210',
-    },
-  },
-  {
-    id: '4',
-    name: 'MS Dhoni',
-    role: 'Wicket Keeper',
-    image: 'https://i.pravatar.cc/150?img=14',
-    age: '18',
-    contactNumber: '1234567890',
-    guardianInfo: {
-      name: 'John Doe',
-      contactNumber: '9876543210',
-    },
-  },
-];
 
 export const PlayersList = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const [players, setPlayers] = useState<PlayerInfo[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useFocusEffect(
+    useCallback(() => {
+      let isActive = true;
+
+      const loadPlayers = async () => {
+        setIsLoading(true);
+        try {
+          const storedPlayers = await playerStorage.getPlayers();
+          if (isActive) {
+            setPlayers(storedPlayers || []);
+          }
+        } catch (error) {
+          console.error('Failed to fetch players:', error);
+        } finally {
+          if (isActive) setIsLoading(false);
+        }
+      };
+
+      loadPlayers();
+      return () => {
+        isActive = false;
+      };
+    }, []),
+  );
 
   const handleRegisterPlayer = () => {
     navigation.navigate('RegisterPlayer');
   };
 
-  const handleEditPlayer = (playerInfo: PlayerInfo) => {
-    navigation.navigate('RegisterPlayer', { playerInfo });
+  const handlePlayerPress = (player: PlayerInfo) => {
+    navigation.navigate('RegisterPlayer', { playerInfo: player });
   };
+
+  const filteredPlayers = players.filter(player =>
+    (player?.name || '').toLowerCase().includes(searchQuery.toLowerCase()),
+  );
 
   return (
     <ScreenWrapper>
-      <View style={styles.container}>
-        <ScreenHeader
-          title="Players"
-          leftIconName="arrow-back"
-          onLeftPress={() => navigation.goBack()}
-        />
+      <ScreenHeader title="Players Roster" />
 
-        {/* The FlatList renders the PlayerCard efficiently */}
-        <FlatList
-          data={MOCK_PLAYERS}
-          keyExtractor={item => item.id}
-          contentContainerStyle={styles.listContent}
-          showsVerticalScrollIndicator={false}
-          renderItem={({ item }) => (
-            <PlayerCard player={item} onPress={() => handleEditPlayer(item)} />
-          )}
+      <View style={styles.searchContainer}>
+        <SearchBar
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          placeholder="Search by player name..."
         />
-
-        <CreateSessionFab onPress={handleRegisterPlayer} />
       </View>
+
+      {isLoading ? (
+        <View style={styles.centerContainer}>
+          <ActivityIndicator size="large" color={colors.primary} />
+        </View>
+      ) : filteredPlayers.length === 0 ? (
+        <View style={styles.centerContainer}>
+          <Text style={styles.emptyText}>No players found.</Text>
+          <Text style={styles.emptySubText}>Tap the + button to register one.</Text>
+        </View>
+      ) : (
+        <FlatList
+          data={filteredPlayers}
+          keyExtractor={(item, index) => (item?.id ? item.id.toString() : index.toString())}
+          renderItem={({ item }) => (
+            <PlayerCard player={item as any} onPress={() => handlePlayerPress(item)} />
+          )}
+          contentContainerStyle={styles.listContainer}
+          showsVerticalScrollIndicator={false}
+        />
+      )}
+
+      <AddButton onPress={handleRegisterPlayer} />
     </ScreenWrapper>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
+  searchContainer: {
+    marginBottom: spacing.m,
   },
-  listContent: {
-    paddingHorizontal: spacing.m,
-    paddingBottom: 100, // Extra space at the bottom so the FAB doesn't block the last item
-    paddingTop: spacing.s,
+  listContainer: {
+    paddingBottom: 100, // Extra padding for FAB
+  },
+  centerContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  emptyText: {
+    color: colors.text.primary,
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 8,
+  },
+  emptySubText: {
+    color: colors.text.secondary,
+    fontSize: 14,
   },
 });

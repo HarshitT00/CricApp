@@ -1,9 +1,9 @@
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import React, { useLayoutEffect, useMemo, useState } from 'react';
-import { FlatList, StyleSheet, Text, View } from 'react-native';
+import React, { useLayoutEffect, useMemo, useState, useCallback } from 'react';
+import { FlatList, StyleSheet, Text, View, ActivityIndicator } from 'react-native';
 
-import { CreateSessionFab } from '@/components/AddButton';
+import { AddButton } from '@/components/AddButton';
 import { ScreenHeader } from '@/components/ScreenHeader';
 import { ScreenWrapper } from '@/components/ScreenWrapper';
 import { SessionCard } from '@/components/SessionCard';
@@ -11,65 +11,52 @@ import { colors } from '@/constants/colors';
 import { spacing } from '@/constants/spacing';
 import { SessionTabOption, SessionTabs } from '@/features/sessions/components/SessionTabs';
 import { RootStackParamList } from '@/navigation/types';
+import { sessionStorage } from '@/services/sessionStorage';
 import { Session } from '@/types/Session';
-
-const ALL_SESSIONS: Session[] = [
-  {
-    id: '1',
-    title: 'U16 Match Day',
-    location: 'Main Stadium',
-    time: 'NOW',
-    image: 'https://images.unsplash.com/photo-1531415074968-036ba1b575da?q=80&w=2067',
-    status: 'LIVE',
-    batch: 'Under-16 Elite Batch',
-  },
-  {
-    id: '2',
-    title: 'Batting Drills',
-    location: 'Nets Area 2',
-    time: '10:00 AM',
-    image: 'https://images.unsplash.com/photo-1624526267942-ab0ff8a3e972?q=80&w=2067',
-    status: 'UPCOMING',
-    batch: 'Under-19 Elite Batch',
-  },
-  {
-    id: '3',
-    title: 'Fitness Test',
-    location: 'Gym',
-    time: 'Yesterday',
-    image: 'https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?q=80&w=2067',
-    status: 'COMPLETED',
-    batch: 'Under-19 Elite Batch',
-  },
-  {
-    id: '4',
-    title: 'Strategy Meeting',
-    location: 'Conf Room',
-    time: 'Last Week',
-    image: 'https://images.unsplash.com/photo-1531415074968-036ba1b575da?q=80&w=2067',
-    status: 'COMPLETED',
-    batch: 'Under-16 Elite Batch',
-  },
-];
 
 export const SessionList = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [activeTab, setActiveTab] = useState<SessionTabOption>('Active');
+  
+  // Real Data State
+  const [sessions, setSessions] = useState<Session[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: false,
     });
   }, [navigation]);
 
+  // Fetch from storage whenever the screen comes into focus
+  useFocusEffect(
+    useCallback(() => {
+      const loadSessions = async () => {
+        setIsLoading(true);
+        try {
+          const storedSessions = await sessionStorage.getSessions();
+          setSessions(storedSessions || []);
+        } catch (error) {
+          console.error("Failed to load sessions:", error);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+      
+      loadSessions();
+    }, [])
+  );
+
+  // Filter based on active tab
   const filteredSessions = useMemo(() => {
     if (activeTab === 'Active') {
-      return ALL_SESSIONS.filter(s => s.status === 'LIVE' || s.status === 'UPCOMING').sort(a =>
-        a.status === 'LIVE' ? -1 : 1,
-      );
+      return sessions
+        .filter(s => s.status === 'LIVE' || s.status === 'UPCOMING' || s.status === 'ONGOING')
+        .sort((a, b) => (a.status === 'LIVE' ? -1 : 1));
     } else {
-      return ALL_SESSIONS.filter(s => s.status === 'COMPLETED');
+      return sessions.filter(s => s.status === 'COMPLETED');
     }
-  }, [activeTab]);
+  }, [activeTab, sessions]);
 
   const handleCreateSession = () => {
     navigation.navigate('CreateSession');
@@ -86,18 +73,29 @@ export const SessionList = () => {
 
         <SessionTabs activeTab={activeTab} onTabChange={setActiveTab} />
 
-        <FlatList
-          data={filteredSessions}
-          keyExtractor={item => item.id}
-          contentContainerStyle={styles.listContent}
-          ItemSeparatorComponent={() => <View style={{ height: spacing.m }} />}
-          renderItem={({ item }) => <SessionCard session={item} height={150} />}
-          ListEmptyComponent={
-            <Text style={styles.emptyText}>No {activeTab.toLowerCase()} sessions found.</Text>
-          }
-        />
+        {isLoading ? (
+          <View style={styles.centerContainer}>
+            <ActivityIndicator size="large" color={colors.primary} />
+          </View>
+        ) : (
+          <FlatList
+            data={filteredSessions}
+            keyExtractor={item => item.id}
+            contentContainerStyle={styles.listContent}
+            ItemSeparatorComponent={() => <View style={{ height: spacing.m }} />}
+            renderItem={({ item }) => <SessionCard session={item} height={150} />}
+            ListEmptyComponent={
+              <View style={styles.emptyContainer}>
+                <Text style={styles.emptyText}>No {activeTab.toLowerCase()} sessions found.</Text>
+                {activeTab === 'Active' && (
+                  <Text style={styles.emptySubText}>Tap the + button to create one!</Text>
+                )}
+              </View>
+            }
+          />
+        )}
 
-        <CreateSessionFab onPress={handleCreateSession} />
+        <AddButton onPress={handleCreateSession} />
       </View>
     </ScreenWrapper>
   );
@@ -107,14 +105,27 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  centerContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   listContent: {
     paddingHorizontal: spacing.xs,
     paddingBottom: 100,
   },
+  emptyContainer: {
+    alignItems: 'center',
+    marginTop: 60,
+  },
   emptyText: {
     color: colors.text.secondary,
-    textAlign: 'center',
-    marginTop: 40,
     fontSize: 16,
+    fontWeight: '600',
   },
+  emptySubText: {
+    color: colors.primary,
+    fontSize: 14,
+    marginTop: 8,
+  }
 });

@@ -1,73 +1,56 @@
 import React from 'react';
-import { View, Text, TextInput, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
-import { SelectorInput } from '@/components/SelectorInput';
+import { CustomInput } from '@/components/CustomInput';
 import { colors } from '@/constants/colors';
 import { spacing } from '@/constants/spacing';
 
-interface CreateSessionDetailsSectionProps {
+interface Props {
   name: string;
-  onChangeName: (name: string) => void;
-  facility: string;
-  onChangeFacility: (facility: string) => void;
+  onChangeName: (val: string) => void;
+  facility: 'Gym' | 'Pitch';
+  onChangeFacility: (val: 'Gym' | 'Pitch') => void;
 }
 
-export const CreateSessionDetailsSection: React.FC<CreateSessionDetailsSectionProps> = ({
-  name,
-  onChangeName,
-  facility,
-  onChangeFacility,
-}) => {
+export const CreateSessionDetailsSection = ({ name, onChangeName, facility, onChangeFacility }: Props) => {
   return (
     <View style={styles.container}>
-      <Text style={styles.sectionHeader}>SESSION DETAILS</Text>
-      <View style={styles.fieldContainer}>
-        <Text style={styles.label}>Session Name</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="e.g. Morning Net Practice"
-          placeholderTextColor={colors.text.secondary}
-          value={name}
-          onChangeText={onChangeName}
-        />
-      </View>
-      <SelectorInput
-        label="Facility"
-        value={facility}
-        placeholder="Select Facility"
-        icon="location-outline"
-        onPress={() => console.log('Open facility picker')}
+      <Text style={styles.sectionTitle}>Session Details</Text>
+      
+      <CustomInput
+        label="Session Name"
+        placeholder="e.g. Morning Fielding Drill"
+        value={name}
+        onChangeText={onChangeName}
       />
+
+      <Text style={styles.label}>Facility</Text>
+      <View style={styles.toggleContainer}>
+        <TouchableOpacity
+          style={[styles.toggleBtn, facility === 'Pitch' && styles.activeToggle]}
+          onPress={() => onChangeFacility('Pitch')}
+        >
+          <Text style={[styles.toggleText, facility === 'Pitch' && styles.activeText]}>Pitch</Text>
+        </TouchableOpacity>
+        
+        <TouchableOpacity
+          style={[styles.toggleBtn, facility === 'Gym' && styles.activeToggle]}
+          onPress={() => onChangeFacility('Gym')}
+        >
+          <Text style={[styles.toggleText, facility === 'Gym' && styles.activeText]}>Gym</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    marginBottom: spacing.xl,
-  },
-  sectionHeader: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: colors.text.secondary,
-    letterSpacing: 1,
-    marginBottom: spacing.m,
-  },
-  fieldContainer: {
-    marginBottom: spacing.l,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: colors.text.primary,
-    marginBottom: spacing.s,
-  },
-  input: {
-    backgroundColor: colors.surface,
-    borderRadius: spacing.borderRadius,
-    paddingHorizontal: spacing.m,
-    paddingVertical: 14,
-    fontSize: 16,
-    color: colors.text.primary,
-  },
+  container: { marginBottom: spacing.l },
+  sectionTitle: { fontSize: 18, fontWeight: 'bold', color: colors.text.primary, marginBottom: spacing.m },
+  label: { fontSize: 14, fontWeight: '600', color: colors.text.secondary, marginBottom: spacing.s },
+  toggleContainer: { flexDirection: 'row', gap: spacing.m, marginBottom: spacing.m },
+  toggleBtn: { flex: 1, padding: spacing.m, borderRadius: 8, borderWidth: 1, borderColor: '#e0e0e0', alignItems: 'center', backgroundColor: colors.background },
+  activeToggle: { backgroundColor: colors.primary, borderColor: colors.primary },
+  toggleText: { fontSize: 16, fontWeight: '600', color: colors.text.primary },
+  activeText: { color: '#fff' },
 });

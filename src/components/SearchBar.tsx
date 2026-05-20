@@ -1,69 +1,54 @@
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
-import {
-  View,
-  TextInput,
-  StyleSheet,
-  TextInputProps,
-  TouchableOpacity,
-  Text,
-  ScrollView,
-} from 'react-native';
+import { View, TextInput, StyleSheet, ScrollView, TouchableOpacity, Text } from 'react-native';
 
 import { colors } from '@/constants/colors';
 import { spacing } from '@/constants/spacing';
 
-export interface SearchResult {
-  id: string;
-  name: string;
-}
-
-interface SearchBarProps extends TextInputProps {
+interface SearchBarProps<T> {
   value: string;
   onChangeText: (text: string) => void;
   placeholder?: string;
-  results?: SearchResult[];
-  onSelectResult?: (result: SearchResult) => void;
+  results?: T[];
+  onSelectResult?: (item: T) => void;
 }
 
-export const SearchBar: React.FC<SearchBarProps> = ({
+export function SearchBar<T extends { id: string; name: string }>({
   value,
   onChangeText,
   placeholder = 'Search...',
   results = [],
   onSelectResult,
-  ...props
-}) => {
-  const showResults = value.length > 0 && results.length > 0;
-
+}: SearchBarProps<T>) {
   return (
-    <View style={styles.wrapper}>
-      {/* Search Input Container */}
-      <View style={styles.searchContainer}>
-        <Ionicons name="search" size={20} color={colors.text.secondary} style={styles.searchIcon} />
+    <View style={styles.container}>
+      <View style={styles.inputContainer}>
+        <Ionicons name="search" size={20} color={colors.text.secondary} style={styles.icon} />
         <TextInput
-          style={styles.searchInput}
-          placeholder={placeholder}
-          placeholderTextColor={colors.text.secondary}
+          style={styles.input}
           value={value}
           onChangeText={onChangeText}
-          {...props}
+          placeholder={placeholder}
+          placeholderTextColor={colors.text.secondary}
         />
+        {value.length > 0 && (
+          <TouchableOpacity onPress={() => onChangeText('')}>
+            <Ionicons name="close-circle" size={20} color={colors.text.secondary} />
+          </TouchableOpacity>
+        )}
       </View>
 
-      {/* Floating Dropdown Results */}
-      {showResults && (
-        <View style={styles.dropdownContainer}>
-          <ScrollView
-            keyboardShouldPersistTaps="handled"
-            style={styles.scrollView}
-            nestedScrollEnabled={true}>
-            {results.map(result => (
+      {/* Dropdown Results - Swapped FlatList for ScrollView */}
+      {results.length > 0 && onSelectResult && (
+        <View style={styles.dropdown}>
+          <ScrollView keyboardShouldPersistTaps="handled" nestedScrollEnabled={true}>
+            {results.map((item) => (
               <TouchableOpacity
-                key={result.id}
-                style={styles.searchResultItem}
-                onPress={() => onSelectResult && onSelectResult(result)}>
-                <Text style={styles.searchResultText}>{result.name}</Text>
+                key={item.id}
+                style={styles.dropdownItem}
+                onPress={() => onSelectResult(item)}
+              >
+                <Text style={styles.dropdownItemText}>{item.name}</Text>
               </TouchableOpacity>
             ))}
           </ScrollView>
@@ -71,59 +56,52 @@ export const SearchBar: React.FC<SearchBarProps> = ({
       )}
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
-  wrapper: {
-    // This makes the dropdown position itself relative to this container
-    position: 'relative',
-    zIndex: 1000, // Important for iOS to ensure dropdown stays on top
-    marginBottom: spacing.m,
+  container: {
+    zIndex: 1000,
   },
-  searchContainer: {
+  inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: colors.surface,
     borderRadius: spacing.borderRadius,
     paddingHorizontal: spacing.m,
+    height: 48,
   },
-  searchIcon: {
+  icon: {
     marginRight: spacing.s,
   },
-  searchInput: {
+  input: {
     flex: 1,
-    paddingVertical: 14,
     fontSize: 16,
     color: colors.text.primary,
   },
-  dropdownContainer: {
+  dropdown: {
     position: 'absolute',
-    top: 54, // Places it right below the search bar
+    top: 52,
     left: 0,
     right: 0,
-    backgroundColor: colors.surfaceLight,
+    backgroundColor: colors.background,
     borderRadius: spacing.borderRadius,
     borderWidth: 1,
-    borderColor: colors.border,
-    maxHeight: 200, // Limits height and makes it scrollable if there are many results
-    zIndex: 1000,
-    elevation: 5, // Adds a shadow on Android
-    shadowColor: '#000', // Adds a shadow on iOS
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
+    borderColor: '#e0e0e0',
+    maxHeight: 200,
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
     shadowRadius: 4,
+    zIndex: 1000,
   },
-  scrollView: {
-    flexGrow: 0,
-  },
-  searchResultItem: {
-    paddingVertical: 12,
-    paddingHorizontal: spacing.m,
+  dropdownItem: {
+    padding: spacing.m,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    borderBottomColor: '#f0f0f0',
   },
-  searchResultText: {
+  dropdownItemText: {
+    fontSize: 16,
     color: colors.text.primary,
-    fontSize: 14,
   },
 });

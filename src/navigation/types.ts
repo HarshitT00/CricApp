@@ -15,4 +15,5 @@ export type RootStackParamList = {
   CreateSession: undefined;
   MarkAttendance: undefined;
   RegisterPlayer: { playerInfo?: PlayerInfo } | undefined;
+  BatchDetails: { batchId: string };
 };
