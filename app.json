@@ -24,6 +24,10 @@
       "adaptiveIcon": {
         "foregroundImage": "./src/assets/adaptive-icon.png",
         "backgroundColor": "#0d291e"
+      },
+      "navigationBar": {
+        "style": "dark-content",
+        "backgroundColor": "#ffffff"
       }
     },
     "plugins": [
@@ -34,7 +38,14 @@
           "userInterfaceStyle": "light"
         }
       ],
-      "expo-web-browser"
+      "expo-web-browser",
+      [
+        "expo-navigation-bar",
+        {
+          "position": "relative",
+          "style": "dark"
+        }
+      ]
     ]
   }
 }

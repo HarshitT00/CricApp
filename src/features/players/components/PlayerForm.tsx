@@ -1,7 +1,16 @@
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  ScrollView,
+  ActivityIndicator,
+  Alert,
+} from 'react-native';
 
 import { CustomInput } from '@/components/CustomInput';
 import { colors } from '@/constants/colors';
@@ -28,27 +37,6 @@ export const PlayerForm = ({ initialData, onSubmit, isSubmitting }: PlayerFormPr
     },
   });
 
-  // UPDATED: Open device camera and set image
-  const handleImagePick = async () => {
-    const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
-
-    if (!permissionResult.granted) {
-      Alert.alert('Permission Required', 'Please allow camera access to take a player photo.');
-      return;
-    }
-
-    const result = await ImagePicker.launchCameraAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [1, 1], // Force a square crop for the face
-      quality: 0.8, // Slightly compress to save memory
-    });
-
-    if (!result.canceled) {
-      updateField('image', result.assets[0].uri);
-    }
-  };
-
   const updateField = (key: keyof PlayerInfo, value: string) => {
     setFormData(prev => ({ ...prev, [key]: value }));
   };
@@ -63,10 +51,45 @@ export const PlayerForm = ({ initialData, onSubmit, isSubmitting }: PlayerFormPr
     }));
   };
 
+  const handleOpenCamera = async () => {
+  const permission = await ImagePicker.requestCameraPermissionsAsync();
+
+  if (!permission.granted) {
+    Alert.alert('Permission Required', 'Camera permission is required to take a photo.');
+    return;
+  }
+
+  const result = await ImagePicker.launchCameraAsync({
+    mediaTypes: 'images',
+    allowsEditing: false,
+    quality: 0.85,
+  });
+
+  if (!result.canceled && result.assets.length > 0) {
+    updateField('image', result.assets[0].uri);
+  }
+};
+
+  const handleSave = () => {
+    if (!formData.name.trim()) {
+      Alert.alert('Validation', 'Please enter a player name.');
+      return;
+    }
+    onSubmit(formData);
+  };
+
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+    <ScrollView
+      style={styles.container}
+      showsVerticalScrollIndicator={false}
+      keyboardShouldPersistTaps="handled">
+
+      {/* Avatar / Camera Trigger */}
       <View style={styles.imageSection}>
-        <TouchableOpacity style={styles.imageCircle} onPress={handleImagePick} activeOpacity={0.8}>
+        <TouchableOpacity
+          style={styles.imageCircle}
+          onPress={handleOpenCamera}
+          activeOpacity={0.8}>
           {formData.image ? (
             <Image source={{ uri: formData.image }} style={styles.profileImage} />
           ) : (
@@ -125,8 +148,7 @@ export const PlayerForm = ({ initialData, onSubmit, isSubmitting }: PlayerFormPr
       <CustomInput
         label="Guardian Name"
         placeholder="Enter guardian's name"
-        value={formData.guardianInfo.name}
-        // FIXED: This previously used updateField('name', text) which overwrote the player's name
+        value={formData.guardianInfo?.name}
         onChangeText={text => updateGuardianField('name', text)}
       />
 
@@ -134,17 +156,21 @@ export const PlayerForm = ({ initialData, onSubmit, isSubmitting }: PlayerFormPr
         label="Guardian Contact"
         placeholder="Enter emergency number"
         keyboardType="phone-pad"
-        value={formData.guardianInfo.contactNumber}
+        value={formData.guardianInfo?.contactNumber}
         onChangeText={text => updateGuardianField('contactNumber', text)}
       />
 
       <TouchableOpacity
-        style={styles.submitButton}
-        onPress={() => onSubmit(formData)}
+        style={[styles.submitButton, isSubmitting && styles.submitButtonDisabled]}
+        onPress={handleSave}
         disabled={isSubmitting}>
-        <Text style={styles.submitButtonText}>
-          {initialData ? 'Update Player' : 'Register Player'}
-        </Text>
+        {isSubmitting ? (
+          <ActivityIndicator color="#fff" />
+        ) : (
+          <Text style={styles.submitButtonText}>
+            {initialData ? 'Update Player' : 'Register Player'}
+          </Text>
+        )}
       </TouchableOpacity>
 
       <View style={styles.bottomPadding} />
@@ -152,7 +178,6 @@ export const PlayerForm = ({ initialData, onSubmit, isSubmitting }: PlayerFormPr
   );
 };
 
-// ... keep existing styles ...
 const styles = StyleSheet.create({
   container: { flex: 1, paddingHorizontal: spacing.m },
   imageSection: { alignItems: 'center', marginVertical: spacing.l },
@@ -166,6 +191,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     position: 'relative',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   profileImage: { width: '100%', height: '100%', borderRadius: 60 },
   placeholderContainer: { alignItems: 'center' },
@@ -201,6 +231,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: spacing.l,
   },
+  submitButtonDisabled: { opacity: 0.7 },
   submitButtonText: { color: colors.background, fontSize: 16, fontWeight: 'bold' },
   bottomPadding: { height: 40 },
 });

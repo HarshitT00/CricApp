@@ -5,6 +5,7 @@ import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
 import { View, Text, Platform } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { colors } from '@/constants/colors';
 import { MarkAttendance } from '@/features/attendance/MarkAttendance';
@@ -39,15 +40,15 @@ const CustomTheme = {
   },
 };
 
-// Shared screen options applied to every stack screen
 const screenOptions = {
   headerShown: false,
   animation: Platform.OS === 'android' ? 'slide_from_right' : 'default',
-  // Fix green flash: set background on the native screen itself, not just contentStyle
   contentStyle: { backgroundColor: colors.background },
 } as const;
 
 function MainTabs() {
+  const insets = useSafeAreaInsets();
+
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -56,9 +57,9 @@ function MainTabs() {
         tabBarStyle: {
           backgroundColor: colors.background,
           borderTopColor: '#e0e0e0',
-          height: 75,
+          height: 75 + insets.bottom,
           paddingTop: 8,
-          paddingBottom: 12,
+          paddingBottom: 12 + insets.bottom,
         },
         tabBarIconStyle: {
           marginBottom: 4,
@@ -108,37 +109,25 @@ export function AppNavigator() {
             contentStyle: { backgroundColor: colors.background },
           }}
         />
-
         <Stack.Screen
           name="CreateSession"
           component={CreateSession}
-          options={{
-            contentStyle: { backgroundColor: colors.background },
-          }}
+          options={{ contentStyle: { backgroundColor: colors.background } }}
         />
-
         <Stack.Screen
           name="MarkAttendance"
           component={MarkAttendance}
-          options={{
-            contentStyle: { backgroundColor: colors.background },
-          }}
+          options={{ contentStyle: { backgroundColor: colors.background } }}
         />
-
         <Stack.Screen
           name="RegisterPlayer"
           component={RegisterPlayer}
-          options={{
-            contentStyle: { backgroundColor: colors.background },
-          }}
+          options={{ contentStyle: { backgroundColor: colors.background } }}
         />
-
         <Stack.Screen
           name="BatchDetails"
           component={BatchDetails}
-          options={{
-            contentStyle: { backgroundColor: colors.background },
-          }}
+          options={{ contentStyle: { backgroundColor: colors.background } }}
         />
       </Stack.Navigator>
     </NavigationContainer>
