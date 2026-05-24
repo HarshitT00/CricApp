@@ -11,6 +11,8 @@ import {
   ActivityIndicator,
   Alert,
 } from 'react-native';
+// ADDED IMPORT
+import { registerFace } from 'react-native-facerecognition';
 
 import { CustomInput } from '@/components/CustomInput';
 import { colors } from '@/constants/colors';
@@ -52,29 +54,45 @@ export const PlayerForm = ({ initialData, onSubmit, isSubmitting }: PlayerFormPr
   };
 
   const handleOpenCamera = async () => {
-  const permission = await ImagePicker.requestCameraPermissionsAsync();
+    const permission = await ImagePicker.requestCameraPermissionsAsync();
 
-  if (!permission.granted) {
-    Alert.alert('Permission Required', 'Camera permission is required to take a photo.');
-    return;
-  }
+    if (!permission.granted) {
+      Alert.alert('Permission Required', 'Camera permission is required to take a photo.');
+      return;
+    }
 
-  const result = await ImagePicker.launchCameraAsync({
-    mediaTypes: 'images',
-    allowsEditing: false,
-    quality: 0.85,
-  });
+    const result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ['images'], // Fixed deprecation warning
+      allowsEditing: false,
+      quality: 0.85,
+    });
 
-  if (!result.canceled && result.assets.length > 0) {
-    updateField('image', result.assets[0].uri);
-  }
-};
+    if (!result.canceled && result.assets.length > 0) {
+      console.log('📸 Camera captured image:', result.assets[0].uri);
+      updateField('image', result.assets[0].uri);
+    }
+  };
 
-  const handleSave = () => {
+  // UPDATED: Made async and added registerFace logic
+  const handleSave = async () => {
     if (!formData.name.trim()) {
       Alert.alert('Validation', 'Please enter a player name.');
       return;
     }
+
+    if (formData.image) {
+      try {
+        console.log(`🤖 Attempting to register face for: ${formData.name}`);
+        const registerStatus = await registerFace(formData.name, formData.image);
+        console.log('✅ Face registration success:', registerStatus);
+      } catch (error) {
+        console.error('❌ Failed to register face in library:', error);
+        Alert.alert('Warning', 'Player details will be saved, but face registration failed.');
+      }
+    } else {
+      console.log('⚠️ No image provided, skipping face registration.');
+    }
+
     onSubmit(formData);
   };
 
@@ -85,7 +103,6 @@ export const PlayerForm = ({ initialData, onSubmit, isSubmitting }: PlayerFormPr
       keyboardShouldPersistTaps="handled"
       contentContainerStyle={styles.scrollContent}>  
 
-      {/* Avatar / Camera Trigger */}
       <View style={styles.imageSection}>
         <TouchableOpacity
           style={styles.imageCircle}
@@ -182,56 +199,17 @@ export const PlayerForm = ({ initialData, onSubmit, isSubmitting }: PlayerFormPr
 const styles = StyleSheet.create({
   container: { flex: 1, paddingHorizontal: spacing.m },
   imageSection: { alignItems: 'center', marginVertical: spacing.l },
-  imageCircle: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    backgroundColor: colors.surface,
-    borderWidth: 2,
-    borderColor: colors.border,
-    justifyContent: 'center',
-    alignItems: 'center',
-    position: 'relative',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
+  imageCircle: { width: 120, height: 120, borderRadius: 60, backgroundColor: colors.surface, borderWidth: 2, borderColor: colors.border, justifyContent: 'center', alignItems: 'center', position: 'relative', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 4, elevation: 3 },
   profileImage: { width: '100%', height: '100%', borderRadius: 60 },
   placeholderContainer: { alignItems: 'center' },
   uploadText: { color: colors.primary, fontSize: 12, fontWeight: '600', marginTop: 4 },
-  editBadge: {
-    position: 'absolute',
-    bottom: 0,
-    right: 0,
-    backgroundColor: colors.primary,
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 3,
-    borderColor: colors.background,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: colors.text.primary,
-    marginBottom: spacing.m,
-    marginTop: spacing.s,
-  },
+  editBadge: { position: 'absolute', bottom: 0, right: 0, backgroundColor: colors.primary, width: 32, height: 32, borderRadius: 16, justifyContent: 'center', alignItems: 'center', borderWidth: 3, borderColor: colors.background },
+  sectionTitle: { fontSize: 18, fontWeight: 'bold', color: colors.text.primary, marginBottom: spacing.m, marginTop: spacing.s },
   row: { flexDirection: 'row' },
   halfWidthLeft: { flex: 1, marginRight: spacing.s },
   halfWidthRight: { flex: 1.5, marginLeft: spacing.s },
   divider: { height: 1, backgroundColor: colors.border, marginVertical: spacing.m },
-  submitButton: {
-    backgroundColor: colors.primary,
-    paddingVertical: 16,
-    borderRadius: 12,
-    alignItems: 'center',
-    marginTop: spacing.l,
-  },
+  submitButton: { backgroundColor: colors.primary, paddingVertical: 16, borderRadius: 12, alignItems: 'center', marginTop: spacing.l },
   submitButtonDisabled: { opacity: 0.7 },
   submitButtonText: { color: colors.background, fontSize: 16, fontWeight: 'bold' },
   bottomPadding: { height: 40 },

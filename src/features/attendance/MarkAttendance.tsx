@@ -1,7 +1,9 @@
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute, RouteProp, useFocusEffect } from '@react-navigation/native';
 import React, { useState, useCallback } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
+import { recognizeFace } from 'react-native-facerecognition';
 
 import { TraineeAttendanceRow } from './components/TraineeAttendanceRow';
 import { ScreenHeader } from '@/components/ScreenHeader';
@@ -15,7 +17,6 @@ import { sessionStorage } from '@/services/sessionStorage';
 import { PlayerInfo } from '@/types/PlayerInfo';
 import { Session } from '@/types/Session';
 
-// Removed 'late' from the type
 export interface AttendanceTrainee extends PlayerInfo {
   status: 'present' | 'absent' | 'pending';
 }
@@ -65,14 +66,50 @@ export const MarkAttendance = () => {
     }, [sessionId])
   );
 
-  const handleStatusChange = (traineeId: string, newStatus: AttendanceTrainee['status']) => {
-    setTrainees(prev =>
-      prev.map(t => (t.id === traineeId ? { ...t, status: newStatus } : t))
-    );
+  const handleStatusChange = async (traineeId: string, newStatus: AttendanceTrainee['status']) => {
+    if (newStatus === 'present') {
+      const permission = await ImagePicker.requestCameraPermissionsAsync();
+
+      if (!permission.granted) {
+        Alert.alert('Permission Required', 'Camera permission is required to verify attendance.');
+        return;
+      }
+
+      try {
+        const result = await ImagePicker.launchCameraAsync({
+          mediaTypes: ['images'], 
+          allowsEditing: false,
+          quality: 0.85,
+        });
+
+        if (!result.canceled && result.assets.length > 0) {
+          const imagePath = result.assets[0].uri;
+          const trainee = trainees.find(t => t.id === traineeId);
+          
+          // Call the custom facial recognition library
+          const recognizedName = await recognizeFace(imagePath);
+          
+          if (recognizedName === trainee?.name) {
+            Alert.alert('Verification Successful', 'Face matched successfully.');
+            setTrainees(prev =>
+              prev.map(t => (t.id === traineeId ? { ...t, status: 'present' } : t))
+            );
+          } else {
+            Alert.alert('Verification Failed', 'Face did not match the selected trainee.');
+          }
+        }
+      } catch (error) {
+        console.error("Face recognition error:", error);
+        Alert.alert('Error', 'Face recognition failed. Please try again.');
+      }
+    } else {
+      setTrainees(prev =>
+        prev.map(t => (t.id === traineeId ? { ...t, status: newStatus } : t))
+      );
+    }
   };
 
   const handleSaveAttendance = () => {
-    console.log("Saving Attendance for:", trainees);
     navigation.goBack();
   };
 
@@ -154,8 +191,8 @@ const styles = StyleSheet.create({
   emptySubText: { color: colors.text.secondary, fontSize: 14, textAlign: 'center', paddingHorizontal: spacing.xl },
   sessionCard: {
     backgroundColor: colors.surface,
-    padding: spacing.xl, // Increased padding to make the card taller
-    minHeight: 120, // Forced minimum height
+    padding: spacing.xl,
+    minHeight: 120,
     justifyContent: 'center',
     borderRadius: spacing.borderRadius,
     marginBottom: spacing.l,
@@ -163,7 +200,7 @@ const styles = StyleSheet.create({
     borderColor: '#e0e0e0',
   },
   sessionTitle: {
-    fontSize: 22, // Increased font size to fit the larger card
+    fontSize: 22,
     fontWeight: 'bold',
     color: colors.text.primary,
     marginBottom: spacing.m,
@@ -178,7 +215,7 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   metaText: {
-    fontSize: 15, // Increased text size slightly
+    fontSize: 15,
     color: colors.text.secondary,
   },
   rosterHeader: {
@@ -191,20 +228,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     color: colors.text.primary,
-  },
-  faceScanBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.primary,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-    gap: 8,
-  },
-  faceScanText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 14,
   },
   listContainer: {
     paddingBottom: 100,
