@@ -48,7 +48,7 @@ export const CreateSession = () => {
   };
 
   return (
-    <ScreenWrapper>
+    <ScreenWrapper edges={['top', 'bottom']}>
       <ScreenHeader
         title={isEditMode ? "Edit Session" : "New Session"}
         leftIconName="close"

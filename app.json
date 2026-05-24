@@ -28,7 +28,8 @@
       "navigationBar": {
         "style": "dark-content",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "softwareKeyboardLayoutMode": "resize"
     },
     "plugins": [
       "expo-font",
@@ -44,6 +45,12 @@
         {
           "position": "relative",
           "style": "dark"
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "cameraPermission": "Allow CricApp to access your camera to take player photos."
         }
       ]
     ]

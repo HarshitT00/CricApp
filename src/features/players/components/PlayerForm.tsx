@@ -82,7 +82,8 @@ export const PlayerForm = ({ initialData, onSubmit, isSubmitting }: PlayerFormPr
     <ScrollView
       style={styles.container}
       showsVerticalScrollIndicator={false}
-      keyboardShouldPersistTaps="handled">
+      keyboardShouldPersistTaps="handled"
+      contentContainerStyle={styles.scrollContent}>  
 
       {/* Avatar / Camera Trigger */}
       <View style={styles.imageSection}>
@@ -234,4 +235,5 @@ const styles = StyleSheet.create({
   submitButtonDisabled: { opacity: 0.7 },
   submitButtonText: { color: colors.background, fontSize: 16, fontWeight: 'bold' },
   bottomPadding: { height: 40 },
+  scrollContent: { flexGrow: 1 },
 });

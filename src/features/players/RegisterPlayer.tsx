@@ -13,45 +13,41 @@ import { PlayerInfo } from '@/types/PlayerInfo';
 export const RegisterPlayer = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<RouteProp<RootStackParamList, 'RegisterPlayer'>>();
-  
+
   const playerInfo = route.params?.playerInfo;
   const isEditMode = !!playerInfo;
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (data: PlayerInfo) => {
-  try {
-    setIsSubmitting(true);
-
-    const playerDataToSave: PlayerInfo = {
-      ...data,
-      // preserve existing id in edit mode, let storage generate one in create mode
-      id: playerInfo?.id || data.id || '',
-    };
-
-    await playerStorage.savePlayer(playerDataToSave);
-    Alert.alert('Success', `Player successfully ${isEditMode ? 'updated' : 'registered'}!`);
-    navigation.goBack();
-  } catch (error) {
-    Alert.alert('Error', 'Could not save the player details.');
-  } finally {
-    setIsSubmitting(false);
-  }
-};
+    try {
+      setIsSubmitting(true);
+      const playerDataToSave: PlayerInfo = {
+        ...data,
+        id: playerInfo?.id || data.id || '',
+      };
+      await playerStorage.savePlayer(playerDataToSave);
+      Alert.alert('Success', `Player successfully ${isEditMode ? 'updated' : 'registered'}!`);
+      navigation.goBack();
+    } catch (error) {
+      Alert.alert('Error', 'Could not save the player details.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
-    <ScreenWrapper>
+    <ScreenWrapper edges={['top', 'bottom']}>
       <View style={styles.container}>
         <ScreenHeader
-          title={isEditMode ? "Edit Player" : "New Registration"}
+          title={isEditMode ? 'Edit Player' : 'New Registration'}
           leftIconName="arrow-back"
           onLeftPress={() => navigation.goBack()}
         />
-
-        <PlayerForm 
-          initialData={playerInfo} 
-          onSubmit={handleSubmit} 
-          isSubmitting={isSubmitting} 
+        <PlayerForm
+          initialData={playerInfo}
+          onSubmit={handleSubmit}
+          isSubmitting={isSubmitting}
         />
       </View>
     </ScreenWrapper>
