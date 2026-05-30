@@ -1,19 +1,14 @@
-import { NavigatorScreenParams } from '@react-navigation/native';
-
+// src/navigation/types.ts
 import { PlayerInfo } from '@/types/PlayerInfo';
 import { Session } from '@/types/Session';
 
-export type MainTabParamList = {
+export type RootStackParamList = {
   Home: undefined;
   Sessions: undefined;
   Batches: undefined;
   Players: undefined;
   Account: undefined;
-};
-
-export type RootStackParamList = {
-  MainTabs: NavigatorScreenParams<MainTabParamList>; // Tells TS about the nested tabs
- CreateSession: { sessionInfo?: Session } | undefined;
+  CreateSession: { sessionInfo?: Session } | undefined;
   MarkAttendance: { sessionId: string };
   RegisterPlayer: { playerInfo?: PlayerInfo } | undefined;
   BatchDetails: { batchId: string };

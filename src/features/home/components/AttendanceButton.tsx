@@ -1,4 +1,5 @@
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+// src/components/AttendanceButton.tsx
+import { QrCodeIcon, LockIcon, ArrowRightIcon } from 'phosphor-react-native';
 import React from 'react';
 import { TouchableOpacity, Text, StyleSheet, View } from 'react-native';
 
@@ -20,20 +21,26 @@ export const AttendanceButton = ({ onPress, disabled = false, sessionName }: Pro
       activeOpacity={0.8}
     >
       <View style={styles.iconContainer}>
-         <MaterialCommunityIcons name="qrcode-scan" size={24} color="black" />
+        {disabled ? (
+          <LockIcon size={24} color={colors.text.secondary} weight="duotone" />
+        ) : (
+          <QrCodeIcon size={24} color="black" weight="bold" />
+        )}
       </View>
+
       <View style={styles.textContainer}>
         <Text style={[styles.title, disabled && styles.disabledText]}>
           Start Session Attendance
         </Text>
         <Text style={[styles.subtitle, disabled && styles.disabledText]}>
-          {disabled 
-            ? 'Available 30 mins before start' 
+          {disabled
+            ? 'Available 30 mins before start'
             : `Tap to mark ${sessionName ? `for ${sessionName}` : 'attendance'}`}
         </Text>
       </View>
+
       {!disabled && (
-        <Ionicons name="chevron-forward" size={24} color="black" />
+        <ArrowRightIcon size={22} color="black" weight="bold" />
       )}
     </TouchableOpacity>
   );

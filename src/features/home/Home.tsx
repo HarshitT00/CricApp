@@ -1,20 +1,45 @@
+// src/features/home/Home.tsx
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useState, useCallback } from 'react';
 import { View, ScrollView, StyleSheet, Text, ActivityIndicator } from 'react-native';
 
+import { AttendanceButton } from '@/features/home/components/AttendanceButton';
+import { NewsCard, NewsItem } from '@/components/NewsCard';
 import { ScreenWrapper } from '@/components/ScreenWrapper';
 import { SessionCard } from '@/components/SessionCard';
 import { colors } from '@/constants/colors';
+import { UserRole } from '@/constants/menuConfig';
 import { spacing } from '@/constants/spacing';
-import { AttendanceButton } from '@/features/home/components/AttendanceButton';
+import { AppMenu } from '@/features/home/components/AppMenu';
 import { HomeHeader } from '@/features/home/components/HomeHeader';
-import { StatsGrid } from '@/features/home/components/StatsGrid';
 import { RootStackParamList } from '@/navigation/types';
 import { sessionStorage } from '@/services/sessionStorage';
 import { Session } from '@/types/Session';
 
 const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+// Dummy data for News & Events
+const DUMMY_NEWS: NewsItem[] = [
+  {
+    id: '1',
+    title: 'India vs. Australia: Key Takeaways',
+    date: 'May 29',
+    imageUrl: { uri: 'https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?q=80&w=500&auto=format&fit=crop' },
+  },
+  {
+    id: '2',
+    title: 'New Youth Training Program Announced',
+    date: 'May 28',
+    imageUrl: { uri: 'https://images.unsplash.com/photo-1531415074968-036ba1b575da?q=80&w=500&auto=format&fit=crop' },
+  },
+  {
+    id: '3',
+    title: 'League Final Weekend Preparation',
+    date: 'May 27',
+    imageUrl: { uri: 'https://images.unsplash.com/photo-1624526267942-ab0f0b580615?q=80&w=500&auto=format&fit=crop' },
+  },
+];
 
 const parseTimeToTodayDate = (timeStr: string): Date => {
   const now = new Date();
@@ -34,10 +59,13 @@ const parseTimeToTodayDate = (timeStr: string): Date => {
 
 export const Home = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  
+
   const [todaySessions, setTodaySessions] = useState<Session[]>([]);
   const [upcomingSession, setUpcomingSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  // TODO: Replace with actual role from context
+  const currentUserRole: UserRole = 'coach';
 
   useFocusEffect(
     useCallback(() => {
@@ -49,14 +77,11 @@ export const Home = () => {
           const allSessions = await sessionStorage.getSessions();
           const now = new Date();
           const todayDayName = DAYS[now.getDay()];
-          
-          // Formats today as YYYY-MM-DD reliably
           const todayDateStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 
-          // 1. Filter for sessions happening specifically today
-          const activeToday = allSessions.filter(session => {
+          const activeToday = allSessions.filter((session) => {
             if (session.status === 'COMPLETED') return false;
-            
+
             if (session.schedule.isRepeating) {
               if (!session.schedule.selectedDays.includes(todayDayName)) return false;
               if (session.schedule.startDate && new Date(session.schedule.startDate) > now) return false;
@@ -67,21 +92,19 @@ export const Home = () => {
             }
           });
 
-          // 2. Sort them chronologically by time
-          activeToday.sort((a, b) => 
-            parseTimeToTodayDate(a.schedule.startTime).getTime() - parseTimeToTodayDate(b.schedule.startTime).getTime()
+          activeToday.sort(
+            (a, b) =>
+              parseTimeToTodayDate(a.schedule.startTime).getTime() -
+              parseTimeToTodayDate(b.schedule.startTime).getTime()
           );
 
-          // 3. Find if the NEXT session is within 30 minutes (or already running)
-          let foundUpcoming = null;
+          let foundUpcoming: Session | null = null;
           for (const session of activeToday) {
             const startTime = parseTimeToTodayDate(session.schedule.startTime);
             const diffMins = (startTime.getTime() - now.getTime()) / 60000;
-            
-            // If it starts in 30 mins or less, OR it already started and hasn't been marked COMPLETED
             if (diffMins <= 30) {
               foundUpcoming = session;
-              break; 
+              break;
             }
           }
 
@@ -89,46 +112,65 @@ export const Home = () => {
             setTodaySessions(activeToday);
             setUpcomingSession(foundUpcoming);
           }
-
         } catch (error) {
-          console.error("Error loading home data", error);
+          console.error('Error loading home data', error);
         } finally {
           if (isActive) setIsLoading(false);
         }
       };
 
       loadHomeData();
-      return () => { isActive = false; };
+      return () => {
+        isActive = false;
+      };
     }, [])
   );
 
   return (
     <ScreenWrapper>
-      <ScrollView 
-        showsVerticalScrollIndicator={false} 
+      <ScrollView
+        showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
         <HomeHeader />
 
-        <StatsGrid />
-
-        {/* Dynamic Attendance Button */}
-        <AttendanceButton 
-          onPress={() => {
-            if (upcomingSession) {
-              navigation.navigate('MarkAttendance', { sessionId: upcomingSession.id });
+        {/* ── Attendance Button ── shown only for roles that have Start Session */}
+        {(currentUserRole === 'coach' || currentUserRole === 'admin') && (
+          <AttendanceButton
+            disabled={!upcomingSession}
+            sessionName={upcomingSession?.name}
+            onPress={() =>
+              upcomingSession &&
+              navigation.navigate('MarkAttendance', { sessionId: upcomingSession.id })
             }
-          }} 
-          disabled={!upcomingSession}
-          sessionName={upcomingSession?.name}
-        />
+          />
+        )}
 
-        {/* Today's Schedule */}
+        {/* ── App Menu grid ── */}
+        <AppMenu currentUserRole={currentUserRole} />
+
+        {/* ── News & Events ── */}
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Today's Schedule</Text>
-          <Text style={styles.sectionSubtitle}>
-            {todaySessions.length} {todaySessions.length === 1 ? 'Session' : 'Sessions'}
-          </Text>
+          <Text style={styles.sectionTitle}>News & Events</Text>
+        </View>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.horizontalScrollContent}
+          style={styles.newsScrollView}
+        >
+          {DUMMY_NEWS.map((news) => (
+            <NewsCard
+              key={news.id}
+              news={news}
+              onPress={() => console.log('Navigate to news details')}
+            />
+          ))}
+        </ScrollView>
+
+        {/* ── Today's Sessions ── */}
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Today's Sessions</Text>
         </View>
 
         {isLoading ? (
@@ -140,16 +182,15 @@ export const Home = () => {
           </View>
         ) : (
           todaySessions.map((session) => (
-            <SessionCard 
-              key={session.id} 
-              session={session} 
-              height={140} 
+            <SessionCard
+              key={session.id}
+              session={session}
+              height={140}
               style={{ marginBottom: spacing.m }}
               onPress={() => navigation.navigate('CreateSession', { sessionInfo: session } as any)}
             />
           ))
         )}
-        
       </ScrollView>
     </ScreenWrapper>
   );
@@ -160,20 +201,20 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.xxl,
   },
   sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'baseline',
     marginBottom: spacing.m,
+    marginTop: spacing.m,
   },
   sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
     color: colors.text.primary,
   },
-  sectionSubtitle: {
-    fontSize: 14,
-    color: colors.primary,
-    fontWeight: '600',
+  newsScrollView: {
+    marginHorizontal: -spacing.m,
+  },
+  horizontalScrollContent: {
+    paddingHorizontal: spacing.m,
+    paddingBottom: spacing.s,
   },
   emptyContainer: {
     backgroundColor: colors.surface,
@@ -181,7 +222,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#e0e0e0',
+    borderColor: colors.border,
     marginTop: spacing.s,
   },
   emptyText: {
@@ -193,5 +234,5 @@ const styles = StyleSheet.create({
   emptySubText: {
     fontSize: 14,
     color: colors.text.secondary,
-  }
+  },
 });
