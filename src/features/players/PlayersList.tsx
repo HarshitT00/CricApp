@@ -60,7 +60,11 @@ export const PlayersList = () => {
 
   return (
     <ScreenWrapper>
-      <ScreenHeader title="Players Roster" />
+      <ScreenHeader 
+        title="Players Roster" 
+        leftIconName="arrow-back"
+        onLeftPress={() => navigation.goBack()}
+      />
 
       <View style={styles.searchContainer}>
         <SearchBar

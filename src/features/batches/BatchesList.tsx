@@ -73,7 +73,11 @@ export const BatchesList = () => {
 
   return (
     <ScreenWrapper>
-      <ScreenHeader title="Training Batches" />
+      <ScreenHeader 
+        title="Training Batches" 
+        leftIconName="arrow-back"
+        onLeftPress={() => navigation.goBack()}
+      />
 
       {/* Added Search Bar */}
       <View style={styles.searchContainer}>

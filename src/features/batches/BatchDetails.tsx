@@ -85,7 +85,7 @@ export const BatchDetails = () => {
       <ScreenWrapper>
         <ScreenHeader
           title="Loading..."
-          leftIconName="arrow-back"
+          leftIconName="close"
           onLeftPress={() => navigation.goBack()}
         />
         <View style={styles.centerContainer}>
@@ -101,7 +101,7 @@ export const BatchDetails = () => {
     <ScreenWrapper>
       <ScreenHeader
         title={batch.name}
-        leftIconName="arrow-back"
+        leftIconName="close"
         onLeftPress={() => navigation.goBack()}
       />
 

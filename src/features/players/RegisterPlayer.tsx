@@ -41,7 +41,7 @@ export const RegisterPlayer = () => {
       <View style={styles.container}>
         <ScreenHeader
           title={isEditMode ? 'Edit Player' : 'New Registration'}
-          leftIconName="arrow-back"
+          leftIconName="close"
           onLeftPress={() => navigation.goBack()}
         />
         <PlayerForm
